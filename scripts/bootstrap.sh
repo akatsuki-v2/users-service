@@ -15,8 +15,8 @@ cd /srv/root
 # /scripts/await-service.sh $ES_HOST $ES_PORT
 
 # run sql database migrations & seeds
-# /scripts/migrate-db up
-# /scripts/seed-db up
+/scripts/migrate-db.sh up
+/scripts/seed-db.sh up
 
 # ensure es indices exist
 # /scripts/es-init
@@ -32,4 +32,5 @@ case $APP_COMPONENT in
 
   *)
     echo "'$APP_COMPONENT' is not a known value for APP_COMPONENT"
+    ;;
 esac
