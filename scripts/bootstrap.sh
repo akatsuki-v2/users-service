@@ -11,8 +11,8 @@ cd /srv/root
 # await connected service availability
 /scripts/await-service.sh $READ_DB_HOST $READ_DB_PORT
 /scripts/await-service.sh $WRITE_DB_HOST $WRITE_DB_PORT
-/scripts/await-service.sh $AMQP_HOST $AMQP_PORT
-/scripts/await-service.sh $ES_HOST $ES_PORT
+# /scripts/await-service.sh $AMQP_HOST $AMQP_PORT
+# /scripts/await-service.sh $ES_HOST $ES_PORT
 
 # run sql database migrations & seeds
 /scripts/migrate-db up
