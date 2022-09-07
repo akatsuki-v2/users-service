@@ -15,8 +15,8 @@ cd /srv/root
 # /scripts/await-service.sh $ES_HOST $ES_PORT
 
 # run sql database migrations & seeds
-/scripts/migrate-db up
-/scripts/seed-db up
+# /scripts/migrate-db up
+# /scripts/seed-db up
 
 # ensure es indices exist
 # /scripts/es-init
