@@ -13,8 +13,8 @@ else
 fi
 
 exec uvicorn \
-    --host 0.0.0.0 \
-    --port 80 \
+    --host $APP_HOST \
+    --port $APP_PORT \
     --no-access-log \
     $EXTRA_PARAMS \
     app.api_boot:api
