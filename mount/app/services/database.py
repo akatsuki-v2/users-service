@@ -58,7 +58,7 @@ class ServiceDatabase:
         async with self.read_pool.connection() as connection:
             return await connection.fetch_val(query, values)  # type: ignore
 
-    async def execute(self, query: str, values: dict | None = None) -> None:
+    async def execute(self, query: str, values: dict | None = None) -> Any:
         async with self.write_pool.connection() as connection:
             return await connection.execute(query, values)  # type: ignore
 
