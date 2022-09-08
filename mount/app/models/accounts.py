@@ -15,7 +15,7 @@ class Account(BaseModel):
     username: str
     safe_username: str
     email_address: str
-    country: str
+    country: str  # iso-3166-1 alpha-2
     status: Status
     created_at: datetime
     updated_at: datetime
