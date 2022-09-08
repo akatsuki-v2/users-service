@@ -4,6 +4,7 @@ from typing import Any
 from typing import Mapping
 
 from databases import Database
+from databases.core import Transaction
 
 
 def _create_pool(dsn: str, min_pool_size: int, max_pool_size: int, ssl: bool) -> Database:
@@ -33,6 +34,9 @@ class ServiceDatabase:
                                        min_pool_size,
                                        max_pool_size,
                                        ssl)
+
+    async def txn(self) -> Transaction:
+        return await self.write_pool.transaction()
 
     async def connect(self) -> None:
         await self.read_pool.connect()
