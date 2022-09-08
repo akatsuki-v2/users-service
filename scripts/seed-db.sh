@@ -6,13 +6,15 @@ if [[ $# -eq 0 ]]; then
 fi
 
 SEEDS_PATH=/srv/root/database/seeds
+SEEDS_SCHEMA_TABLE=schema_seeds
+
 FULL_DB_NAME=$WRITE_DB_NAME
 
 if [[ "$APP_COMPONENT" == "tests" ]]; then
     FULL_DB_NAME="${WRITE_DB_NAME}_test"
 fi
 
-DB_DSN="mysql://${WRITE_DB_USER}:${WRITE_DB_PASS}@tcp(${WRITE_DB_HOST}:${WRITE_DB_PORT})/${FULL_DB_NAME}"
+DB_DSN="mysql://${WRITE_DB_USER}:${WRITE_DB_PASS}@tcp(${WRITE_DB_HOST}:${WRITE_DB_PORT})/${FULL_DB_NAME}?x-migrations-table=${SEEDS_SCHEMA_TABLE}"
 
 case "$1" in
     up)
