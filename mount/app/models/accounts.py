@@ -33,3 +33,9 @@ class Account(BaseModel):
             created_at=mapping["created_at"],
             updated_at=mapping["updated_at"],
         )
+
+
+class AccountUpdate(BaseModel):
+    username: str | None
+    email_address: str | None
+    country: str | None  # iso-3166-1 alpha-2
