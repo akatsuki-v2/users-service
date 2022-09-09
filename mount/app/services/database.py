@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+from types import TracebackType
 from typing import Any
 from typing import Mapping
+from typing import Type
 
 from databases import Database
 from databases.core import Transaction
@@ -34,6 +36,15 @@ class ServiceDatabase:
                                        min_pool_size,
                                        max_pool_size,
                                        ssl)
+
+    async def __aenter__(self) -> ServiceDatabase:
+        await self.connect()
+        return self
+
+    async def __aexit__(self, exc_type: Type[BaseException] | None,
+                        exc_value: None | BaseException | None,
+                        traceback:  TracebackType | None) -> None:
+        await self.disconnect()
 
     async def transaction(self) -> Transaction:
         return await self.write_pool.transaction()
