@@ -23,11 +23,12 @@ class CredentialsRepo:
                      identifier: str,
                      passphrase: str,
                      ) -> Mapping[str, Any] | None:
-        query = """\
+        query = f"""\
             INSERT INTO credentials (credentials_id, account_id,
                                      identifier_type, identifier, passphrase)
                  VALUES (:credentials_id, :account_id, :identifier_type,
                          :identifier, :passphrase)
+              RETURNING {self.READ_PARAMS}
         """
         params = {
             "credentials_id": credentials_id,
@@ -36,26 +37,19 @@ class CredentialsRepo:
             "identifier": identifier,
             "passphrase": passphrase,
         }
-        rec_id: int = await self.ctx.db.execute(query, params)
-
-        query = f"""\
-            SELECT {self.READ_PARAMS}
-              FROM credentials
-             WHERE rec_id = :rec_id
-        """
-        params = {"rec_id": rec_id}
-        account = await self.ctx.db.fetch_one(query, params)
-        return account
+        credentials = await self.ctx.db.fetch_one(query, params)
+        return credentials
 
     async def fetch_one(self, credentials_id: UUID) -> Mapping[str, Any] | None:
         query = f"""\
             SELECT {self.READ_PARAMS}
               FROM credentials
              WHERE credentials_id = :credentials_id
+         RETURNING {self.READ_PARAMS}
         """
         params = {"credentials_id": credentials_id}
-        account = await self.ctx.db.fetch_one(query, params)
-        return account
+        credentials = await self.ctx.db.fetch_one(query, params)
+        return credentials
 
     async def fetch_all(self) -> list[Mapping[str, Any]]:
         query = f"""\
@@ -73,14 +67,8 @@ class CredentialsRepo:
             SELECT {self.READ_PARAMS}
               FROM credentials
              WHERE credentials_id = :credentials_id
+         RETURNING {self.READ_PARAMS}
         """
         params = {"credentials_id": credentials_id}
-        account = await self.ctx.db.fetch_one(query, params)
-
-        query = """\
-            DELETE FROM credentials
-                  WHERE credentials_id = :credentials_id
-        """
-        params = {"credentials_id": credentials_id}
-        await self.ctx.db.execute(query, params)
-        return account
+        credentials = await self.ctx.db.fetch_one(query, params)
+        return credentials
