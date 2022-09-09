@@ -35,7 +35,7 @@ class ServiceDatabase:
                                        max_pool_size,
                                        ssl)
 
-    async def txn(self) -> Transaction:
+    async def transaction(self) -> Transaction:
         return await self.write_pool.transaction()
 
     async def connect(self) -> None:

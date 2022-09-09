@@ -1,5 +1,7 @@
+aioredis
 asyncpg
 databases==0.5.5
+email-validator
 fastapi[all]
 python-dotenv
 uvicorn[standard]

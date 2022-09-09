@@ -10,7 +10,8 @@ from app.common.context import Context
 class AccountsRepo:
     READ_PARAMS = """\
         rec_id, account_id, username, safe_username, email_address,
-        country, status, created_at, updated_at"""
+        country, status, created_at, updated_at
+    """
 
     def __init__(self, ctx: Context) -> None:
         self.ctx = ctx
