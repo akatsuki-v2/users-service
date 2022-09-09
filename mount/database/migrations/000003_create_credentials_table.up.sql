@@ -1,5 +1,5 @@
 CREATE TABLE credentials (
-    rec_id INT NOT NULL PRIMARY KEY,
+    rec_id SERIAL NOT NULL PRIMARY KEY,
     credentials_id UUID NOT NULL UNIQUE,
     account_id UUID NOT NULL,
     identifier_type TEXT NOT NULL,
