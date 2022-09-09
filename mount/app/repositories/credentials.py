@@ -25,9 +25,10 @@ class CredentialsRepo:
                      ) -> Mapping[str, Any] | None:
         query = f"""\
             INSERT INTO credentials (credentials_id, account_id,
-                                     identifier_type, identifier, passphrase)
+                                     identifier_type, identifier, passphrase,
+                                     status)
                  VALUES (:credentials_id, :account_id, :identifier_type,
-                         :identifier, :passphrase)
+                         :identifier, :passphrase, :status)
               RETURNING {self.READ_PARAMS}
         """
         params = {
@@ -36,6 +37,7 @@ class CredentialsRepo:
             "identifier_type": identifier_type,
             "identifier": identifier,
             "passphrase": passphrase,
+            "status": "active",
         }
         credentials = await self.ctx.db.fetch_one(query, params)
         return credentials

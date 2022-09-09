@@ -22,8 +22,8 @@ class AccountsRepo:
                      email_address: str,
                      country: str) -> Mapping[str, Any] | None:
         query = f"""\
-            INSERT INTO accounts (account_id, username, email_address, country)
-                 VALUES (:account_id, :username, :email_address, :country)
+            INSERT INTO accounts (account_id, username, email_address, country, status)
+                 VALUES (:account_id, :username, :email_address, :country, :status)
               RETURNING {self.READ_PARAMS}
         """
         params = {
@@ -31,6 +31,7 @@ class AccountsRepo:
             "username": username,
             "email_address": email_address,
             "country": country,
+            "status": "active",
         }
         account = await self.ctx.db.fetch_one(query, params)
         return account
