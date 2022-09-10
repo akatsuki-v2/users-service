@@ -6,8 +6,8 @@ from app.api.rest.context import RequestContext
 from app.common import responses
 from app.common.errors import ServiceError
 from app.models.accounts import Account
-from app.models.accounts import AccountInput
 from app.models.accounts import AccountUpdate
+from app.models.accounts import SignupForm
 from app.usecases import accounts
 from fastapi import APIRouter
 from fastapi import Depends
@@ -17,12 +17,12 @@ router = APIRouter()
 
 # https://osuakatsuki.atlassian.net/browse/V2-10
 @router.post("/v1/accounts", response_model=Account)
-async def signup(args: AccountInput, ctx: RequestContext = Depends()):
-    data = await accounts.signup(ctx,
-                                 args.username,
-                                 args.password,
-                                 args.email_address,
-                                 args.country)
+async def sign_up(args: SignupForm, ctx: RequestContext = Depends()):
+    data = await accounts.sign_up(ctx,
+                                  args.username,
+                                  args.password,
+                                  args.email_address,
+                                  args.country)
     if isinstance(data, ServiceError):
         return responses.failure(data, "Failed to signup for account")
 

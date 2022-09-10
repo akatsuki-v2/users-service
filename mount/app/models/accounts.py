@@ -12,7 +12,7 @@ from . import Status
 # NOTE: the `country` field is iso-3166-1 alpha-2
 
 
-class AccountInput(BaseModel):
+class SignupForm(BaseModel):
     username: str
     password: str
     email_address: str
