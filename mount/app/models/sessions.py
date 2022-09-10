@@ -8,6 +8,12 @@ from uuid import UUID
 from . import BaseModel
 
 
+class LoginForm(BaseModel):
+    username: str
+    password: str
+    user_agent: str  # TODO: literal?
+
+
 class Session(BaseModel):
     session_id: UUID
     account_id: UUID
@@ -26,3 +32,7 @@ class Session(BaseModel):
             created_at=mapping["created_at"],
             updated_at=mapping["updated_at"],
         )
+
+
+class SessionUpdate(BaseModel):
+    expires_at: datetime | None
