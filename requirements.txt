@@ -1,5 +1,6 @@
 aioredis
 asyncpg
+bcrypt
 databases==0.5.5
 email-validator
 fastapi[all]

@@ -7,6 +7,7 @@ from uuid import UUID
 from uuid import uuid4
 
 from app.common import logging
+from app.common import security
 from app.common import validation
 from app.common.context import Context
 from app.common.errors import ServiceError
@@ -53,11 +54,12 @@ async def signup(ctx: Context,
                                       country=country)
 
         credentials_id = uuid4()
+        hashed_password = security.hash_password(password)
         credentials = await c_repo.create(credentials_id=credentials_id,
                                           account_id=account_id,
                                           identifier_type="email",
                                           identifier=email_address,
-                                          passphrase=password)
+                                          passphrase=hashed_password)
     except Exception as exc:  # pragma: no cover
         await transaction.rollback()
         logging.error("Unable to create account:", error=exc)
