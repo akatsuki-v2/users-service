@@ -28,9 +28,9 @@ async def log_in(ctx: Context,
         return ServiceError.CREDENTIALS_NOT_FOUND
 
     account_id = credentials["account_id"]
-    passphrase = credentials["passphrase"]
+    hashed_password = credentials["passphrase"]
 
-    if not security.check_password(password, passphrase):
+    if not security.check_password(password, hashed_password):
         return ServiceError.CREDENTIALS_INCORRECT
 
     try:
