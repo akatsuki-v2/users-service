@@ -23,22 +23,26 @@ async def signup(ctx: Context,
     a_repo = AccountsRepo(ctx)
     c_repo = CredentialsRepo(ctx)
 
+    # TODO: should validation be all on the models?
     # TODO: should validation have more specific errors?
 
     if not validation.validate_email(email_address):
         return ServiceError.ACCOUNTS_CANNOT_CREATE
 
+    if await a_repo.fetch_one(email_address=email_address) is not None:
+        return ServiceError.ACCOUNTS_EMAIL_ADDRESS_EXISTS
+
+    if await a_repo.fetch_one(username=username) is not None:
+        return ServiceError.ACCOUNTS_USERNAME_EXISTS
+
     transaction = await ctx.db.transaction()
 
     try:
         account_id = uuid4()
-        account = await a_repo.create(account_id=account_id,
+        account = await a_repo.create(account_id=uuid4(),
                                       username=username,
                                       email_address=email_address,
                                       country=country)
-        if account is None:
-            await transaction.rollback()
-            return ServiceError.ACCOUNTS_CANNOT_CREATE
 
         credentials_id = uuid4()
         credentials = await c_repo.create(credentials_id=credentials_id,
@@ -46,11 +50,7 @@ async def signup(ctx: Context,
                                           identifier_type="email",
                                           identifier=email_address,
                                           passphrase=password)
-        if credentials is None:
-            await transaction.rollback()
-            return ServiceError.CREDENTIALS_CANNOT_CREATE
-
-    except Exception as exc:
+    except Exception as exc:  # pragma: no cover
         await transaction.rollback()
         logging.error("Unable to create account:", error=exc)
         logging.error("Stack trace: ", error=traceback.format_exc())
@@ -89,7 +89,7 @@ async def partial_update(ctx: Context,
     updates = {}
 
     for field in AccountUpdate.__fields__:
-        value = kwargs[field]
+        value = kwargs.get(field)
         if value is not None and value != account[field]:
             updates[field] = value
 

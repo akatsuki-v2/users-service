@@ -22,7 +22,7 @@ class CredentialsRepo:
                      identifier_type: str,
                      identifier: str,
                      passphrase: str,
-                     ) -> Mapping[str, Any] | None:
+                     ) -> Mapping[str, Any]:
         query = f"""\
             INSERT INTO credentials (credentials_id, account_id,
                                      identifier_type, identifier, passphrase,
@@ -40,6 +40,7 @@ class CredentialsRepo:
             "status": "active",
         }
         credentials = await self.ctx.db.fetch_one(query, params)
+        assert credentials is not None
         return credentials
 
     async def fetch_one(self, credentials_id: UUID) -> Mapping[str, Any] | None:
@@ -61,8 +62,19 @@ class CredentialsRepo:
         all_credentials = await self.ctx.db.fetch_all(query)
         return all_credentials
 
-    async def partial_update(self, credentials_id: UUID, **updates: Any) -> None:
-        ...  # TODO
+    async def partial_update(self, credentials_id: UUID, **updates: Any) -> Mapping[str, Any]:
+        assert updates  # no empty updates
+
+        query = f"""\
+            UPDATE credentials
+               SET {", ".join(f"{k} = :{k}" for k in updates)}
+             WHERE credentials_id = :credentials_id
+         RETURNING {self.READ_PARAMS}
+        """
+        params = {"credentials_id": credentials_id, **updates}
+        credentials = await self.ctx.db.fetch_one(query, params)
+        assert credentials is not None
+        return credentials
 
     async def delete(self, credentials_id: UUID) -> Mapping[str, Any] | None:
         query = f"""\

@@ -20,7 +20,7 @@ class AccountsRepo:
                      account_id: UUID,
                      username: str,
                      email_address: str,
-                     country: str) -> Mapping[str, Any] | None:
+                     country: str) -> Mapping[str, Any]:
         query = f"""\
             INSERT INTO accounts (account_id, username, email_address, country, status)
                  VALUES (:account_id, :username, :email_address, :country, :status)
@@ -34,15 +34,24 @@ class AccountsRepo:
             "status": "active",
         }
         account = await self.ctx.db.fetch_one(query, params)
+        assert account is not None
         return account
 
-    async def fetch_one(self, account_id: UUID) -> Mapping[str, Any] | None:
+    async def fetch_one(self, account_id: UUID | None = None,
+                        username: str | None = None,
+                        email_address: str | None = None) -> Mapping[str, Any] | None:
         query = f"""\
             SELECT {self.READ_PARAMS}
               FROM accounts
-             WHERE account_id = :account_id
+             WHERE account_id = COALESCE(:account_id, account_id)
+                AND username = COALESCE(:username, username)
+                AND email_address = COALESCE(:email_address, email_address)
         """
-        params = {"account_id": account_id}
+        params = {
+            "account_id": account_id,
+            "username": username,
+            "email_address": email_address,
+        }
         account = await self.ctx.db.fetch_one(query, params)
         return account
 
@@ -54,8 +63,19 @@ class AccountsRepo:
         accounts = await self.ctx.db.fetch_all(query)
         return accounts
 
-    async def partial_update(self, account_id: UUID, **updates: Any) -> None:
-        ...  # TODO
+    async def partial_update(self, account_id: UUID, **updates: Any) -> Mapping[str, Any]:
+        assert updates  # no empty updates
+
+        query = f"""\
+            UPDATE accounts
+               SET {", ".join(f"{k} = :{k}" for k in updates)}
+             WHERE account_id = :account_id
+         RETURNING {self.READ_PARAMS}
+        """
+        params = {"account_id": account_id, **updates}
+        account = await self.ctx.db.fetch_one(query, params)
+        assert account is not None
+        return account
 
     async def delete(self, account_id: UUID) -> Mapping[str, Any] | None:
         query = f"""\
