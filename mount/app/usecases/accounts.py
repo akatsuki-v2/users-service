@@ -53,7 +53,7 @@ async def sign_up(ctx: Context,
                                       email_address=email_address,
                                       country=country)
 
-        hashed_password = security.hash_password(password)
+        hashed_password = await security.hash_password(password)
 
         # create two sets of credentials for the user;
         # allow them to login in via username or email address

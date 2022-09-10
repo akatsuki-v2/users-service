@@ -1,9 +1,23 @@
+import asyncio
+
 import bcrypt
 
-
-def check_password(password: str, hashed: str) -> bool:
-    return bcrypt.checkpw(password.encode('utf-8'), hashed.encode('utf-8'))
+DEFAULT_EXECUTOR = None
 
 
-def hash_password(password: str) -> str:
-    return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+async def check_password(password: str, hashed: str) -> bool:
+    loop = asyncio.get_event_loop()
+    return await loop.run_in_executor(DEFAULT_EXECUTOR,
+                                      bcrypt.checkpw,
+                                      password.encode('utf-8'),
+                                      hashed.encode('utf-8'),
+                                      )
+
+
+async def hash_password(password: str) -> bytes:
+    loop = asyncio.get_event_loop()
+    return await loop.run_in_executor(DEFAULT_EXECUTOR,
+                                      bcrypt.hashpw,
+                                      password.encode('utf-8'),
+                                      bcrypt.gensalt(),
+                                      )

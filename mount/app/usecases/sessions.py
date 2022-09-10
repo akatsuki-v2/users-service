@@ -30,7 +30,7 @@ async def log_in(ctx: Context,
     account_id = credentials["account_id"]
     hashed_password = credentials["passphrase"]
 
-    if not security.check_password(password, hashed_password):
+    if not await security.check_password(password, hashed_password):
         return ServiceError.CREDENTIALS_INCORRECT
 
     try:
