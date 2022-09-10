@@ -38,4 +38,4 @@ class AccountUpdate(BaseModel):
 
     # private endpoint feature
     # not to be exposed to users
-    status: Status
+    status: Status | None
