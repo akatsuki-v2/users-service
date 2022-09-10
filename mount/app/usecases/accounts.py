@@ -100,33 +100,24 @@ async def partial_update(ctx: Context,
                          **kwargs: Any | None) -> Mapping[str, Any] | ServiceError:
     repo = AccountsRepo(ctx)
 
-    account = await repo.fetch_one(account_id)
+    updates = {
+        field: value
+        for field in AccountUpdate.__fields__
+        if (value := kwargs.get(field)) is not None
+    }
+
+    account = await repo.partial_update(account_id, **updates)
     if account is None:
         return ServiceError.ACCOUNTS_NOT_FOUND
 
-    updates = {}
-
-    for field in AccountUpdate.__fields__:
-        value = kwargs.get(field)
-        if value is not None and value != account[field]:
-            updates[field] = value
-
-    if not updates:
-        # TODO: should we return an error here?
-        return account
-
-    updated = await repo.partial_update(account_id, **updates)
-    assert updated is not None
-
-    return updated
+    return account
 
 
 async def delete(ctx: Context, account_id: UUID) -> Mapping[str, Any] | ServiceError:
     repo = AccountsRepo(ctx)
 
-    account = await repo.fetch_one(account_id)
+    account = await repo.delete(account_id)
     if account is None:
         return ServiceError.ACCOUNTS_NOT_FOUND
 
-    await repo.delete(account_id)
     return account
