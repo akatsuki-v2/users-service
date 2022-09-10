@@ -1,0 +1,71 @@
+from __future__ import annotations
+
+from datetime import datetime
+from datetime import timedelta
+from typing import Any
+from typing import Mapping
+from uuid import UUID
+
+from app.common import json
+from app.common.context import Context
+
+SESSION_EXPIRY = 3600  # 1h
+
+
+def create_session_key(session_id: UUID) -> str:
+    return f"user-accounts:sessions:{session_id}"
+
+
+class SessionsRepo:
+    def __init__(self, ctx: Context) -> None:
+        self.ctx = ctx
+
+    async def create(self, session_id: UUID, account_id: UUID,
+                     user_agent: str) -> Mapping[str, Any]:
+        now = datetime.now()
+        expires_at = now + timedelta(seconds=SESSION_EXPIRY)
+        session = {
+            "session_id": session_id,
+            "account_id": account_id,
+            "user_agent": user_agent,
+            "expires_at": expires_at,
+            "created_at": now,
+            "updated_at": now,
+
+        }
+        await self.ctx.redis.setex(create_session_key(session_id),
+                                   SESSION_EXPIRY, json.dumps(session))
+        return session
+
+    async def fetch_one(self, session_id: UUID) -> Mapping[str, Any] | None:
+        session = await self.ctx.redis.get(create_session_key(session_id))
+        if session is None:
+            return None
+        return json.loads(session)
+
+    # TODO: fetch all? (with filters)
+
+    async def partial_update(self, session_id: UUID, **kwargs: Any) -> Mapping[str, Any] | None:
+        session = await self.fetch_one(session_id)
+        if session is None:
+            return None
+
+        session = dict(session)
+        session.update(kwargs)
+
+        await self.ctx.redis.setex(create_session_key(session_id),
+                                   SESSION_EXPIRY, json.dumps(session))
+
+        return session
+
+    async def delete(self, session_id: UUID) -> Mapping[str, Any] | None:
+        session_key = create_session_key(session_id)
+
+        session = await self.ctx.redis.get(session_key)
+        if session is None:
+            return None
+
+        # TODO: should we be actually deleting?
+        await self.ctx.redis.delete(session_key)
+
+        return session
