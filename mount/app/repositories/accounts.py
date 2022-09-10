@@ -5,12 +5,13 @@ from typing import Mapping
 from uuid import UUID
 
 from app.common.context import Context
+from app.models import Status
 
 
 class AccountsRepo:
     READ_PARAMS = """\
-        rec_id, account_id, username, safe_username, email_address,
-        country, status, created_at, updated_at
+        rec_id, account_id, username, safe_username, email_address, country,
+        status, created_at, updated_at
     """
 
     def __init__(self, ctx: Context) -> None:
@@ -20,7 +21,8 @@ class AccountsRepo:
                      account_id: UUID,
                      username: str,
                      email_address: str,
-                     country: str) -> Mapping[str, Any]:
+                     country: str,
+                     status: Status = Status.ACTIVE) -> Mapping[str, Any]:
         query = f"""\
             INSERT INTO accounts (account_id, username, email_address, country, status)
                  VALUES (:account_id, :username, :email_address, :country, :status)
@@ -31,7 +33,7 @@ class AccountsRepo:
             "username": username,
             "email_address": email_address,
             "country": country,
-            "status": "active",
+            "status": status,
         }
         account = await self.ctx.db.fetch_one(query, params)
         assert account is not None
@@ -39,32 +41,45 @@ class AccountsRepo:
 
     async def fetch_one(self, account_id: UUID | None = None,
                         username: str | None = None,
-                        email_address: str | None = None) -> Mapping[str, Any] | None:
+                        email_address: str | None = None,
+                        country: str | None = None,
+                        status: Status | None = Status.ACTIVE) -> Mapping[str, Any] | None:
         query = f"""\
             SELECT {self.READ_PARAMS}
               FROM accounts
              WHERE account_id = COALESCE(:account_id, account_id)
                 AND username = COALESCE(:username, username)
                 AND email_address = COALESCE(:email_address, email_address)
+                AND country = COALESCE(:country, country)
+                AND status = COALESCE(:status, status)
         """
         params = {
             "account_id": account_id,
             "username": username,
             "email_address": email_address,
+            "country": country,
+            "status": status,
         }
         account = await self.ctx.db.fetch_one(query, params)
         return account
 
-    async def fetch_all(self) -> list[Mapping[str, Any]]:
+    async def fetch_all(self, country: str | None = None,
+                        status: Status | None = Status.ACTIVE
+                        ) -> list[Mapping[str, Any]]:
         query = f"""\
             SELECT {self.READ_PARAMS}
               FROM accounts
+             WHERE country = COALESCE(:country, country)
+               AND status = COALESCE(:status, status)
         """
-        accounts = await self.ctx.db.fetch_all(query)
+        params = {"country": country, "status": status}
+        accounts = await self.ctx.db.fetch_all(query, params)
         return accounts
 
-    async def partial_update(self, account_id: UUID, **updates: Any) -> Mapping[str, Any]:
-        assert updates  # no empty updates
+    async def partial_update(self, account_id: UUID, **updates: Any
+                             ) -> Mapping[str, Any] | None:
+        if not updates:
+            return None
 
         query = f"""\
             UPDATE accounts
@@ -75,7 +90,6 @@ class AccountsRepo:
         """
         params = {"account_id": account_id, **updates}
         account = await self.ctx.db.fetch_one(query, params)
-        assert account is not None
         return account
 
     async def delete(self, account_id: UUID) -> Mapping[str, Any] | None:
