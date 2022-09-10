@@ -31,6 +31,7 @@ export PYTHONPATH=$PYTHONPATH:/srv/root
 cd /srv/root
 
 pytest \
+    --cov-config=tests/coverage.ini \
     --cov=app \
     --cov-report=term \
     --cov-report=html:tests/htmlcov \
