@@ -1,3 +1,4 @@
+import json
 import uuid
 from typing import Any
 
@@ -16,3 +17,11 @@ def preprocess_json(data: Any) -> Any:
         return str(data)
     else:
         return data
+
+
+def dumps(data: Any) -> str:
+    return json.dumps(data)
+
+
+def loads(data: str) -> Any:
+    return json.loads(data)
