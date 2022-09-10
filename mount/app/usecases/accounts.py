@@ -100,16 +100,22 @@ async def partial_update(ctx: Context,
                          **kwargs: Any | None) -> Mapping[str, Any] | ServiceError:
     repo = AccountsRepo(ctx)
 
+    account = await repo.fetch_one(account_id)
+    if account is None:
+        return ServiceError.ACCOUNTS_NOT_FOUND
+
     updates = {
         field: value
         for field in AccountUpdate.__fields__
         if (value := kwargs.get(field)) is not None
     }
 
-    account = await repo.partial_update(account_id, **updates)
-    if account is None:
-        return ServiceError.ACCOUNTS_NOT_FOUND
+    if not updates:
+        # return the account as-is
+        return account
 
+    account = await repo.partial_update(account_id, **updates)
+    assert account is not None
     return account
 
 
