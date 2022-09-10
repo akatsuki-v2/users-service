@@ -30,20 +30,6 @@ class Account(BaseModel):
     updated_at: datetime
     status: Status
 
-    @classmethod
-    def from_mapping(cls, mapping: Mapping[str, Any]) -> Account:
-        return cls(
-            rec_id=mapping["rec_id"],
-            account_id=mapping["account_id"],
-            username=mapping["username"],
-            safe_username=mapping["safe_username"],
-            email_address=mapping["email_address"],
-            country=mapping["country"],
-            status=mapping["status"],
-            created_at=mapping["created_at"],
-            updated_at=mapping["updated_at"],
-        )
-
 
 class AccountUpdate(BaseModel):
     username: str | None
