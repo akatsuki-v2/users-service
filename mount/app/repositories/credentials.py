@@ -43,14 +43,17 @@ class CredentialsRepo:
         assert credentials is not None
         return credentials
 
-    async def fetch_one(self, credentials_id: UUID) -> Mapping[str, Any] | None:
+    async def fetch_one(self, credentials_id: UUID | None = None,
+                        identifier: str | None = None
+                        ) -> Mapping[str, Any] | None:
         query = f"""\
             SELECT {self.READ_PARAMS}
               FROM credentials
-             WHERE credentials_id = :credentials_id
+             WHERE credentials_id = COALESCE(:credentials_id, credentials_id)
+               AND identifier = COALESCE(:identifier, identifier)
          RETURNING {self.READ_PARAMS}
         """
-        params = {"credentials_id": credentials_id}
+        params = {"credentials_id": credentials_id, "identifier": identifier}
         credentials = await self.ctx.db.fetch_one(query, params)
         return credentials
 
