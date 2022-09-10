@@ -16,6 +16,7 @@ echo "CREATE DATABASE ${FULL_TEST_DB_NAME}" | PGPASSWORD=$WRITE_DB_PASS psql \
     --dbname=postgres
 
 export WRITE_DB_NAME=$FULL_TEST_DB_NAME
+export READ_DB_NAME=$FULL_TEST_DB_NAME
 
 echo "Running database migrations.."
 /scripts/migrate-db.sh up
