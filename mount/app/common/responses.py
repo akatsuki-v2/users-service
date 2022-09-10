@@ -1,10 +1,12 @@
 from typing import Any
 
 from app.common.errors import ServiceError
+from app.common.json import preprocess_json
 from fastapi.responses import ORJSONResponse
 
 
 def success(content: Any, status_code: int = 200, headers: dict | None = None) -> ORJSONResponse:
+    content = preprocess_json(content)
     data = {"status": "success", "data": content}
     return ORJSONResponse(data, status_code, headers)
 
