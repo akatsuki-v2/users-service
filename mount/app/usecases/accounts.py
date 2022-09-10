@@ -16,11 +16,11 @@ from app.repositories.accounts import AccountsRepo
 from app.repositories.credentials import CredentialsRepo
 
 
-async def signup(ctx: Context,
-                 username: str,
-                 password: str,
-                 email_address: str,
-                 country: str) -> Mapping[str, Any] | ServiceError:
+async def sign_up(ctx: Context,
+                  username: str,
+                  password: str,
+                  email_address: str,
+                  country: str) -> Mapping[str, Any] | ServiceError:
     a_repo = AccountsRepo(ctx)
     c_repo = CredentialsRepo(ctx)
 
