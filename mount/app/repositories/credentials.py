@@ -22,7 +22,7 @@ class CredentialsRepo:
                      account_id: UUID,
                      identifier_type: str,
                      identifier: str,
-                     passphrase: str | bytes,
+                     passphrase: str,
                      ) -> Mapping[str, Any]:
         query = f"""\
             INSERT INTO credentials (credentials_id, account_id,
