@@ -8,4 +8,5 @@ pytest
 pytest-asyncio
 pytest-cov
 python-dotenv
+structlog
 uvicorn[standard]
