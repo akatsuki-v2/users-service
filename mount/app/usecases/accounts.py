@@ -39,7 +39,7 @@ async def signup(ctx: Context,
 
     try:
         account_id = uuid4()
-        account = await a_repo.create(account_id=uuid4(),
+        account = await a_repo.create(account_id=account_id,
                                       username=username,
                                       email_address=email_address,
                                       country=country)
