@@ -48,10 +48,10 @@ class AccountsRepo:
             SELECT {self.READ_PARAMS}
               FROM accounts
              WHERE account_id = COALESCE(:account_id, account_id)
-                AND username = COALESCE(:username, username)
-                AND email_address = COALESCE(:email_address, email_address)
-                AND country = COALESCE(:country, country)
-                AND status = COALESCE(:status, status)
+               AND username = COALESCE(:username, username)
+               AND email_address = COALESCE(:email_address, email_address)
+               AND country = COALESCE(:country, country)
+               AND status = COALESCE(:status, status)
         """
         params = {
             "account_id": account_id,
@@ -97,8 +97,8 @@ class AccountsRepo:
             UPDATE accounts
                SET status = 'deleted',
                    updated_at = CURRENT_TIMESTAMP
-                  WHERE account_id = :account_id
-              RETURNING {self.READ_PARAMS}
+             WHERE account_id = :account_id
+         RETURNING {self.READ_PARAMS}
         """
         params = {"account_id": account_id}
         account = await self.ctx.db.fetch_one(query, params)
