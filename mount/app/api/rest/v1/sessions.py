@@ -20,8 +20,8 @@ router = APIRouter()
 async def log_in(args: LoginForm, ctx: RequestContext = Depends()):
     data = await sessions.log_in(ctx,
                                  args.username,
-                                 args.user_agent,
-                                 args.password)
+                                 args.password,
+                                 args.user_agent)
     if isinstance(data, ServiceError):
         return responses.failure(data, "Failed to create session")
 
