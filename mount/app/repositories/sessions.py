@@ -55,8 +55,10 @@ class SessionsRepo:
         session = dict(session)
         session.update(kwargs)
 
-        await self.ctx.redis.setex(create_session_key(session_id),
-                                   SESSION_EXPIRY, json.dumps(session))
+        await self.ctx.redis.set(create_session_key(session_id), json.dumps(session))
+
+        if expires_at := kwargs.get("expires_at"):
+            await self.ctx.redis.expireat(create_session_key(session_id), expires_at)
 
         return session
 
