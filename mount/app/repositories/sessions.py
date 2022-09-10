@@ -15,6 +15,9 @@ SESSION_EXPIRY = 3600  # 1h
 def create_session_key(session_id: UUID) -> str:
     return f"user-accounts:sessions:{session_id}"
 
+# TODO: is my usage of setex correct?
+# i'm technically desyncing from the expires_at var
+
 
 class SessionsRepo:
     def __init__(self, ctx: Context) -> None:
