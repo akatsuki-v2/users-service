@@ -53,13 +53,21 @@ async def signup(ctx: Context,
                                       email_address=email_address,
                                       country=country)
 
-        credentials_id = uuid4()
         hashed_password = security.hash_password(password)
-        credentials = await c_repo.create(credentials_id=credentials_id,
-                                          account_id=account_id,
-                                          identifier_type="email",
-                                          identifier=email_address,
-                                          passphrase=hashed_password)
+
+        # create two sets of credentials for the user;
+        # allow them to login in via username or email address
+        for identifier_type, identifier, passphrase in (
+            ("username", username, hashed_password),
+            ("email", email_address, hashed_password),
+        ):
+            credentials_id = uuid4()
+            await c_repo.create(credentials_id=credentials_id,
+                                account_id=account_id,
+                                identifier_type=identifier_type,
+                                identifier=identifier,
+                                passphrase=passphrase)
+
     except Exception as exc:  # pragma: no cover
         await transaction.rollback()
         logging.error("Unable to create account:", error=exc)
