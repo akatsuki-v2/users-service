@@ -23,11 +23,19 @@ async def signup(ctx: Context,
     a_repo = AccountsRepo(ctx)
     c_repo = CredentialsRepo(ctx)
 
-    # TODO: should validation be all on the models?
-    # TODO: should validation have more specific errors?
+    # perform data validation
+
+    if not validation.validate_username(username):
+        return ServiceError.ACCOUNTS_INVALID_USERNAME
+
+    if not validation.validate_password(password):
+        return ServiceError.ACCOUNTS_INVALID_PASSWORD
 
     if not validation.validate_email(email_address):
         return ServiceError.ACCOUNTS_EMAIL_ADDRESS_INVALID
+
+    if not validation.validate_country(country):
+        return ServiceError.ACCOUNTS_COUNTRY_INVALID
 
     if await a_repo.fetch_one(email_address=email_address) is not None:
         return ServiceError.ACCOUNTS_EMAIL_ADDRESS_EXISTS
