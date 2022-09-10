@@ -11,7 +11,7 @@ from app.common import security
 from app.common import validation
 from app.common.context import Context
 from app.common.errors import ServiceError
-from app.models.accounts import AccountUpdate
+from app.models import Status
 from app.repositories.accounts import AccountsRepo
 from app.repositories.credentials import CredentialsRepo
 
@@ -79,10 +79,19 @@ async def sign_up(ctx: Context,
     return account
 
 
-async def fetch_one(ctx: Context, account_id: UUID) -> Mapping[str, Any] | ServiceError:
+async def fetch_one(ctx: Context,
+                    account_id: UUID | None = None,
+                    username: str | None = None,
+                    email_address: str | None = None,
+                    country: str | None = None,
+                    status: Status | None = Status.ACTIVE) -> Mapping[str, Any] | ServiceError:
     repo = AccountsRepo(ctx)
 
-    account = await repo.fetch_one(account_id)
+    account = await repo.fetch_one(account_id=account_id,
+                                   username=username,
+                                   email_address=email_address,
+                                   country=country,
+                                   status=status)
     if account is None:
         return ServiceError.ACCOUNTS_NOT_FOUND
 

@@ -5,6 +5,7 @@ from uuid import UUID
 from app.api.rest.context import RequestContext
 from app.common import responses
 from app.common.errors import ServiceError
+from app.models import Status
 from app.models.accounts import Account
 from app.models.accounts import AccountUpdate
 from app.models.accounts import SignupForm
@@ -32,8 +33,10 @@ async def sign_up(args: SignupForm, ctx: RequestContext = Depends()):
 
 # https://osuakatsuki.atlassian.net/browse/V2-58
 @router.get("/v1/accounts/{account_id}", response_model=Account)
-async def get_account(account_id: UUID, ctx: RequestContext = Depends()):
-    data = await accounts.fetch_one(ctx, account_id)
+async def get_account(account_id: UUID,
+                      status: Status | None = None,
+                      ctx: RequestContext = Depends()):
+    data = await accounts.fetch_one(ctx, account_id, status=status)
     if isinstance(data, ServiceError):
         return responses.failure(data, "Failed to fetch account")
 
