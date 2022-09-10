@@ -80,7 +80,9 @@ class AccountsRepo:
 
     async def delete(self, account_id: UUID) -> Mapping[str, Any] | None:
         query = f"""\
-            DELETE FROM accounts
+            UPDATE accounts
+               SET status = 'deleted',
+                   updated_at = CURRENT_TIMESTAMP
                   WHERE account_id = :account_id
               RETURNING {self.READ_PARAMS}
         """

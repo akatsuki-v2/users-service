@@ -77,13 +77,14 @@ class CredentialsRepo:
         assert credentials is not None
         return credentials
 
-    async def delete(self, credentials_id: UUID) -> Mapping[str, Any] | None:
+    async def delete(self, resource_id: UUID) -> Mapping[str, Any] | None:
         query = f"""\
-            SELECT {self.READ_PARAMS}
-              FROM credentials
-             WHERE credentials_id = :credentials_id
+            UPDATE resources
+               SET status = 'deleted',
+                   updated_at = CURRENT_TIMESTAMP
+             WHERE resource_id = :resource_id
          RETURNING {self.READ_PARAMS}
         """
-        params = {"credentials_id": credentials_id}
-        credentials = await self.ctx.db.fetch_one(query, params)
-        return credentials
+        params = {"resource_id": resource_id}
+        resource = await self.ctx.db.fetch_one(query, params)
+        return resource
