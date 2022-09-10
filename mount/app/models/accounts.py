@@ -9,22 +9,29 @@ from . import BaseModel
 from . import Status
 
 
-class BaseAccount(BaseModel):
+# NOTE: the `country` field is iso-3166-1 alpha-2
+
+
+class AccountInput(BaseModel):
+    username: str
+    password: str
+    email_address: str
+    country: str
+
+
+class Account(BaseModel):
+    rec_id: int
     account_id: UUID
     username: str
-    safe_username: str
+    safe_username: str  # NOTE: generated column
     email_address: str
-    country: str  # iso-3166-1 alpha-2
-
-
-class Account(BaseAccount):
-    rec_id: int
-    status: Status
+    country: str
     created_at: datetime
     updated_at: datetime
+    status: Status
 
     @classmethod
-    def from_mapping(cls, mapping: Mapping[str, Any]) -> BaseAccount:
+    def from_mapping(cls, mapping: Mapping[str, Any]) -> Account:
         return cls(
             rec_id=mapping["rec_id"],
             account_id=mapping["account_id"],
@@ -38,14 +45,10 @@ class Account(BaseAccount):
         )
 
 
-class AccountInput(BaseAccount):
-    password: str
-
-
 class AccountUpdate(BaseModel):
     username: str | None
     email_address: str | None
-    country: str | None  # iso-3166-1 alpha-2
+    country: str | None
 
     # private endpoint feature
     # not to be exposed to users
