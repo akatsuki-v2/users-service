@@ -24,7 +24,8 @@ echo "Running database migrations.."
 echo "Running database seeds.."
 /scripts/seed-db.sh up
 
-# don't generate .pyc files
+# make sure we're not running cache
+find . -name "*.pyc" -delete
 export PYTHONDONTWRITEBYTECODE=1
 export PYTHONPATH=$PYTHONPATH:/srv/root
 
