@@ -1,27 +1,35 @@
-import json
 import uuid
 from typing import Any
 
+import orjson
 from asyncpg.pgproto import pgproto
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 
-def preprocess_json(data: Any) -> Any:
+def _default_processor(data: Any) -> Any:
     if isinstance(data, BaseModel):
-        return preprocess_json(data.dict())
+        return _default_processor(data.dict())
     elif isinstance(data, dict):
-        return {k: preprocess_json(v) for k, v in data.items()}
+        return {k: _default_processor(v) for k, v in data.items()}
     elif isinstance(data, list):
-        return [preprocess_json(v) for v in data]
+        return [_default_processor(v) for v in data]
     elif isinstance(data, (uuid.UUID, pgproto.UUID)):
         return str(data)
     else:
         return data
 
 
-def dumps(data: Any) -> str:
-    return json.dumps(data)
+def dumps(data: Any) -> bytes:
+    return orjson.dumps(data, default=_default_processor)
 
 
 def loads(data: str) -> Any:
-    return json.loads(data)
+    return orjson.loads(data)
+
+
+class ORJSONResponse(JSONResponse):
+    media_type = "application/json"
+
+    def render(self, content: Any) -> bytes:
+        return dumps(content)

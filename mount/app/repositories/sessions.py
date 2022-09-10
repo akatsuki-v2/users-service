@@ -34,7 +34,6 @@ class SessionsRepo:
             "expires_at": expires_at,
             "created_at": now,
             "updated_at": now,
-
         }
         await self.ctx.redis.setex(create_session_key(session_id),
                                    SESSION_EXPIRY, json.dumps(session))
