@@ -104,11 +104,35 @@ async def partial_update(ctx: Context,
     if account is None:
         return ServiceError.ACCOUNTS_NOT_FOUND
 
-    updates = {
-        field: value
-        for field in AccountUpdate.__fields__
-        if (value := kwargs.get(field)) is not None
-    }
+    updates = {}
+
+    new_username = kwargs.get("username")
+    if new_username is not None and new_username != account["username"]:
+        if not validation.validate_username(new_username):
+            return ServiceError.ACCOUNTS_USERNAME_INVALID
+
+        if await repo.fetch_one(username=new_username) is not None:
+            return ServiceError.ACCOUNTS_USERNAME_EXISTS
+
+        updates["username"] = new_username
+
+    new_email_address = kwargs.get("email_address")
+    if new_email_address is not None and new_email_address != account["email_address"]:
+        if not validation.validate_email(new_email_address):
+            return ServiceError.ACCOUNTS_EMAIL_ADDRESS_INVALID
+
+        if await repo.fetch_one(email_address=new_email_address) is not None:
+            return ServiceError.ACCOUNTS_EMAIL_ADDRESS_EXISTS
+
+        updates["email_address"] = new_email_address
+        updates["email_address_verification_time"] = None
+
+    new_country = kwargs.get("country")
+    if new_country is not None and new_country != account["country"]:
+        if not validation.validate_country(new_country):
+            return ServiceError.ACCOUNTS_COUNTRY_INVALID
+
+        updates["country"] = new_country
 
     if not updates:
         # return the account as-is
