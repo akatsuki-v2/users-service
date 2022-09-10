@@ -163,7 +163,7 @@ async def test_should_fail_partial_update_no_account(ctx: Context):
     new_username = "partial_update2"
     data = await accounts.partial_update(ctx,
                                          account_id=account_id,
-                                         sername=new_username,)
+                                         username=new_username)
     assert isinstance(data, ServiceError)
     assert data == ServiceError.ACCOUNTS_NOT_FOUND
 
