@@ -31,6 +31,19 @@ async def sign_up(args: SignupForm, ctx: RequestContext = Depends()):
     return responses.success(resp)
 
 
+# https://osuakatsuki.atlassian.net/browse/V2-33
+@router.get("/v1/accounts", response_model=list[Account])
+async def get_accounts(country: str | None = None,
+                       status: Status | None = Status.ACTIVE,
+                       ctx: RequestContext = Depends()):
+    data = await accounts.fetch_all(ctx, country=country, status=status)
+    if isinstance(data, ServiceError):
+        return responses.failure(data, "Failed to get accounts")
+
+    resp = [Account.from_mapping(acc) for acc in data]
+    return responses.success(resp)
+
+
 # https://osuakatsuki.atlassian.net/browse/V2-58
 @router.get("/v1/accounts/{account_id}", response_model=Account)
 async def get_account(account_id: UUID,

@@ -98,9 +98,11 @@ async def fetch_one(ctx: Context,
     return account
 
 
-async def fetch_all(ctx: Context) -> list[Mapping[str, Any]]:
+async def fetch_all(ctx: Context, country: str | None = None,
+                    status: Status | None = Status.ACTIVE) -> list[Mapping[str, Any]]:
     repo = AccountsRepo(ctx)
-    accounts = await repo.fetch_all()
+    accounts = await repo.fetch_all(country=country,
+                                    status=status)
     return accounts
 
 
