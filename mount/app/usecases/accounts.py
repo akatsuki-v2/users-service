@@ -27,10 +27,10 @@ async def sign_up(ctx: Context,
     # perform data validation
 
     if not validation.validate_username(username):
-        return ServiceError.ACCOUNTS_INVALID_USERNAME
+        return ServiceError.ACCOUNTS_USERNAME_INVALID
 
     if not validation.validate_password(password):
-        return ServiceError.ACCOUNTS_INVALID_PASSWORD
+        return ServiceError.ACCOUNTS_PASSWORD_INVALID
 
     if not validation.validate_email(email_address):
         return ServiceError.ACCOUNTS_EMAIL_ADDRESS_INVALID

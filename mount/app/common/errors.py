@@ -6,8 +6,8 @@ from enum import Enum
 class ServiceError(str, Enum):
     ACCOUNTS_CANNOT_CREATE = 'accounts.cannot_create'
     ACCOUNTS_NOT_FOUND = 'accounts.not_found'
-    ACCOUNTS_INVALID_USERNAME = 'accounts.invalid_username'
-    ACCOUNTS_INVALID_PASSWORD = 'accounts.invalid_password'
+    ACCOUNTS_USERNAME_INVALID = 'accounts.username_invalid'
+    ACCOUNTS_PASSWORD_INVALID = 'accounts.password_invalid'
     ACCOUNTS_EMAIL_ADDRESS_INVALID = 'accounts.email_address_invalid'
     ACCOUNTS_COUNTRY_INVALID = 'accounts.country_invalid'
     ACCOUNTS_EMAIL_ADDRESS_EXISTS = 'accounts.email_address_exists'
