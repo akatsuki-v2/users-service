@@ -27,7 +27,7 @@ async def signup(ctx: Context,
     # TODO: should validation have more specific errors?
 
     if not validation.validate_email(email_address):
-        return ServiceError.ACCOUNTS_CANNOT_CREATE
+        return ServiceError.ACCOUNTS_EMAIL_ADDRESS_INVALID
 
     if await a_repo.fetch_one(email_address=email_address) is not None:
         return ServiceError.ACCOUNTS_EMAIL_ADDRESS_EXISTS

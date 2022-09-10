@@ -36,10 +36,10 @@ async def test_should_signup(ctx: Context):
     # TODO: should we check the credentials were created correctly?
 
 
-async def test_should_fail_signup_bad_email(ctx: Context):
-    username = "bad_email"
+async def test_should_fail_signup_invalid_email(ctx: Context):
+    username = "invalid_email"
     password = "lol123"
-    email_address = "bad_email"
+    email_address = "invalid_email"
     country = "CA"
     data = await accounts.signup(ctx,
                                  username=username,
@@ -47,7 +47,7 @@ async def test_should_fail_signup_bad_email(ctx: Context):
                                  email_address=email_address,
                                  country=country)
     assert isinstance(data, ServiceError)
-    assert data == ServiceError.ACCOUNTS_CANNOT_CREATE
+    assert data == ServiceError.ACCOUNTS_EMAIL_ADDRESS_INVALID
 
 
 async def test_should_fail_signup_duplicate_email(ctx: Context):
