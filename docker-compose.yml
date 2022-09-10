@@ -1,0 +1,135 @@
+version: "3.3"
+
+# networks:
+#   default:
+#     driver: bridge
+
+services:
+  ## shared/managed services
+
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_PASSWORD: lol123
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  # mysql:
+  #   # logging:
+  #   #   driver: none
+  #   image: mysql
+  #   environment:
+  #     - MYSQL_ROOT_PASSWORD=lol123
+  #   restart: always
+  #   volumes:
+  #     - ./mysql:/var/lib/mysql
+  #   ports:
+  #     - 3306:3306
+
+  redis:
+    logging:
+      driver: none
+    image: redis
+    restart: always
+    command: redis-server
+    ports:
+      - 6379:6379
+
+  # elasticsearch:
+  #   logging:
+  #     driver: none
+  #   image: elasticsearch:8.1.3
+  #   environment:
+  #     - node.name=es01
+  #     - bootstrap.memory_lock=true
+  #     - xpack.security.enabled=false
+  #     - discovery.type=single-node
+  #     - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+  #   ulimits:
+  #     memlock:
+  #       soft: -1
+  #       hard: -1
+  #     nofile:
+  #       soft: 65536
+  #       hard: 65536
+  #   volumes:
+  #     - ./es_data:/usr/share/elasticsearch/data
+  #   ports:
+  #     - 9200:9200
+  #     - 9300:9300
+
+  # rabbitmq:
+  #   logging:
+  #     driver: none
+  #   image: rabbitmq:3.9-management
+  #   environment:
+  #     - RABBITMQ_USERNAME=rabbitmq
+  #     - RABBITMQ_PASSWORD=lol123
+  #   volumes:
+  #     - ./rabbitmq/data/:/var/lib/rabbitmq
+  #     - ./rabbitmq/log/:/var/log/rabbitmq
+  #   ports:
+  #     - 5672:5672
+  #     - 15672:15672
+
+  ## application services
+
+  # user-gateway-service:
+  #   image: user-gateway-service:latest
+  #   ports:
+  #     - 10000:80
+  #   environment:
+  #     # asgi + app
+  #     - APP_ENV=local
+  #     - APP_COMPONENT=api
+  #     - APP_HOST=0.0.0.0
+  #     - APP_PORT=80
+  #     - LOG_LEVEL=20
+  #   volumes:
+  #     - ./../user-gateway-service/mount:/srv/root
+  #     - ./../user-gateway-service/scripts:/scripts
+
+  user-accounts-service:
+    image: user-accounts-service:latest
+    ports:
+      - 11000:80
+    environment:
+      # asgi + app
+      - APP_ENV=local
+      - APP_COMPONENT=api
+      - APP_HOST=0.0.0.0
+      - APP_PORT=80
+      - LOG_LEVEL=20
+      # database
+      - READ_DB_DRIVER=postgresql
+      - READ_DB_USER=postgres
+      - READ_DB_PASS=lol123
+      - READ_DB_HOST=postgres
+      - READ_DB_PORT=5432
+      - READ_DB_NAME=user_accounts_dev
+      - WRITE_DB_DRIVER=postgresql
+      - WRITE_DB_USER=postgres
+      - WRITE_DB_PASS=lol123
+      - WRITE_DB_HOST=postgres
+      - WRITE_DB_PORT=5432
+      - WRITE_DB_NAME=user_accounts_dev
+      - MIN_DB_POOL_SIZE=5
+      - MAX_DB_POOL_SIZE=10
+      - DB_USE_SSL=false
+      # redis
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      # rabbitmq
+      - AMQP_HOST=rabbitmq
+      - AMQP_PORT=5672
+      - AMQP_USER=guest
+      - AMQP_PASS=guest
+    volumes:
+      - ./mount:/srv/root
+      - ./scripts:/scripts
+    depends_on:
+      - postgres
+      - redis
+      # - rabbitmq
