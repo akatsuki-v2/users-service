@@ -68,7 +68,8 @@ class AccountsRepo:
 
         query = f"""\
             UPDATE accounts
-               SET {", ".join(f"{k} = :{k}" for k in updates)}
+               SET {", ".join(f"{k} = :{k}" for k in updates)},
+                   updated_at = CURRENT_TIMESTAMP
              WHERE account_id = :account_id
          RETURNING {self.READ_PARAMS}
         """

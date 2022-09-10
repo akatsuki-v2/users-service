@@ -67,7 +67,8 @@ class CredentialsRepo:
 
         query = f"""\
             UPDATE credentials
-               SET {", ".join(f"{k} = :{k}" for k in updates)}
+               SET {", ".join(f"{k} = :{k}" for k in updates)},
+                   updated_at = CURRENT_TIMESTAMP
              WHERE credentials_id = :credentials_id
          RETURNING {self.READ_PARAMS}
         """
