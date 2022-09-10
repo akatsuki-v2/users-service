@@ -52,7 +52,6 @@ class CredentialsRepo:
               FROM credentials
              WHERE credentials_id = COALESCE(:credentials_id, credentials_id)
                AND identifier = COALESCE(:identifier, identifier)
-         RETURNING {self.READ_PARAMS}
         """
         params = {"credentials_id": credentials_id, "identifier": identifier}
         credentials = await self.ctx.db.fetch_one(query, params)
