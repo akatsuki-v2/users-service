@@ -5,6 +5,7 @@ from typing import Mapping
 from uuid import UUID
 
 from app.common.context import Context
+from app.models import Status
 
 
 class CredentialsRepo:
@@ -57,16 +58,27 @@ class CredentialsRepo:
         credentials = await self.ctx.db.fetch_one(query, params)
         return credentials
 
-    async def fetch_all(self) -> list[Mapping[str, Any]]:
+    async def fetch_all(self, account_id: UUID | None = None,
+                        identifier_type: str | None = None,
+                        status: Status | None = Status.ACTIVE
+                        ) -> list[Mapping[str, Any]]:
         query = f"""\
             SELECT {self.READ_PARAMS}
               FROM credentials
+             WHERE account_id = COALESCE(:account_id, account_id)
+               AND identifier_type = COALESCE(:identifier_type, identifier_type)
+               AND status = COALESCE(:status, status)
         """
-        all_credentials = await self.ctx.db.fetch_all(query)
+        params = {
+            "account_id": account_id,
+            "identifier_type": identifier_type,
+            "status": status,
+        }
+        all_credentials = await self.ctx.db.fetch_all(query, params)
         return all_credentials
 
-    async def partial_update(self, credentials_id: UUID, **updates: Any) -> Mapping[str, Any]:
-        assert updates  # no empty updates
+    async def partial_update(self, credentials_id: UUID, **updates: Any) -> Mapping[str, Any] | None:
+        assert updates
 
         query = f"""\
             UPDATE credentials
@@ -77,7 +89,6 @@ class CredentialsRepo:
         """
         params = {"credentials_id": credentials_id, **updates}
         credentials = await self.ctx.db.fetch_one(query, params)
-        assert credentials is not None
         return credentials
 
     async def delete(self, resource_id: UUID) -> Mapping[str, Any] | None:
