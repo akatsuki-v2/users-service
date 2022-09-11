@@ -23,7 +23,7 @@ class SessionsRepo:
     def __init__(self, ctx: Context) -> None:
         self.ctx = ctx
 
-    async def create(self, session_id: UUID, account_id: UUID,
+    async def create(self, session_id: UUID, account_id: int,
                      user_agent: str) -> Mapping[str, Any]:
         now = datetime.now()
         expires_at = now + timedelta(seconds=SESSION_EXPIRY)

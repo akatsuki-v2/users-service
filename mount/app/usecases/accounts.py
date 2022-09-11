@@ -3,7 +3,6 @@ from __future__ import annotations
 import traceback
 from collections.abc import Mapping
 from typing import Any
-from uuid import UUID
 from uuid import uuid4
 
 from app.common import logging
@@ -47,9 +46,7 @@ async def sign_up(ctx: Context,
     transaction = await ctx.db.transaction()
 
     try:
-        account_id = uuid4()
-        account = await a_repo.create(account_id=account_id,
-                                      username=username,
+        account = await a_repo.create(username=username,
                                       email_address=email_address,
                                       country=country)
 
@@ -63,7 +60,7 @@ async def sign_up(ctx: Context,
         ):
             credentials_id = uuid4()
             await c_repo.create(credentials_id=credentials_id,
-                                account_id=account_id,
+                                account_id=account["account_id"],
                                 identifier_type=identifier_type,
                                 identifier=identifier,
                                 passphrase=passphrase)
@@ -80,7 +77,7 @@ async def sign_up(ctx: Context,
 
 
 async def fetch_one(ctx: Context,
-                    account_id: UUID | None = None,
+                    account_id: int | None = None,
                     username: str | None = None,
                     email_address: str | None = None,
                     country: str | None = None,
@@ -107,7 +104,7 @@ async def fetch_all(ctx: Context, country: str | None = None,
 
 
 async def partial_update(ctx: Context,
-                         account_id: UUID,
+                         account_id: int,
                          **kwargs: Any | None) -> Mapping[str, Any] | ServiceError:
     repo = AccountsRepo(ctx)
 
@@ -154,7 +151,7 @@ async def partial_update(ctx: Context,
     return account
 
 
-async def delete(ctx: Context, account_id: UUID) -> Mapping[str, Any] | ServiceError:
+async def delete(ctx: Context, account_id: int) -> Mapping[str, Any] | ServiceError:
     repo = AccountsRepo(ctx)
 
     account = await repo.delete(account_id)

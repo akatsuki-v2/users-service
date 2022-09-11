@@ -10,7 +10,7 @@ from app.models import Status
 
 class AccountsRepo:
     READ_PARAMS = """\
-        rec_id, account_id, username, safe_username, email_address, country,
+        account_id, username, safe_username, email_address, country,
         status, created_at, updated_at
     """
 
@@ -18,18 +18,16 @@ class AccountsRepo:
         self.ctx = ctx
 
     async def create(self,
-                     account_id: UUID,
                      username: str,
                      email_address: str,
                      country: str,
                      status: Status = Status.ACTIVE) -> Mapping[str, Any]:
         query = f"""\
-            INSERT INTO accounts (account_id, username, email_address, country, status)
-                 VALUES (:account_id, :username, :email_address, :country, :status)
+            INSERT INTO accounts (username, email_address, country, status)
+                 VALUES (:username, :email_address, :country, :status)
               RETURNING {self.READ_PARAMS}
         """
         params = {
-            "account_id": account_id,
             "username": username,
             "email_address": email_address,
             "country": country,
@@ -39,7 +37,7 @@ class AccountsRepo:
         assert account is not None
         return account
 
-    async def fetch_one(self, account_id: UUID | None = None,
+    async def fetch_one(self, account_id: int | None = None,
                         username: str | None = None,
                         email_address: str | None = None,
                         country: str | None = None,
@@ -76,7 +74,7 @@ class AccountsRepo:
         accounts = await self.ctx.db.fetch_all(query, params)
         return accounts
 
-    async def partial_update(self, account_id: UUID, **updates: Any
+    async def partial_update(self, account_id: int, **updates: Any
                              ) -> Mapping[str, Any] | None:
         if not updates:
             return None
@@ -92,7 +90,7 @@ class AccountsRepo:
         account = await self.ctx.db.fetch_one(query, params)
         return account
 
-    async def delete(self, account_id: UUID) -> Mapping[str, Any] | None:
+    async def delete(self, account_id: int) -> Mapping[str, Any] | None:
         query = f"""\
             UPDATE accounts
                SET status = 'deleted',

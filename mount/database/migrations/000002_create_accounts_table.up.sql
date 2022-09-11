@@ -1,6 +1,5 @@
 CREATE TABLE accounts (
-    rec_id SERIAL NOT NULL PRIMARY KEY,
-    account_id UUID NOT NULL UNIQUE,
+    account_id SERIAL NOT NULL PRIMARY KEY,
     username VARCHAR(16) NOT NULL,
     safe_username VARCHAR(16) GENERATED ALWAYS AS (REPLACE(LOWER(username), ' ', '_')) STORED NOT NULL,
     email_address VARCHAR(255) NOT NULL,

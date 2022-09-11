@@ -1,9 +1,6 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any
-from typing import Mapping
-from uuid import UUID
 
 from . import BaseModel
 from . import Status
@@ -20,8 +17,7 @@ class SignupForm(BaseModel):
 
 
 class Account(BaseModel):
-    rec_id: int
-    account_id: UUID
+    account_id: int
     username: str
     safe_username: str  # NOTE: generated column
     email_address: str
