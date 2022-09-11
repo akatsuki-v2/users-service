@@ -21,7 +21,7 @@ class IdentifierType(str, Enum):
 class Credentials(BaseModel):
     rec_id: int
     credentials_id: UUID
-    account_id: UUID
+    account_id: int
     identifier_type: IdentifierType
     identifier: str
     passphrase: str

@@ -1,5 +1,3 @@
-from uuid import uuid4
-
 import pytest
 from app.common.context import Context
 from app.common.errors import ServiceError
@@ -25,7 +23,6 @@ async def test_should_signup(ctx: Context):
                                   country=country)
     assert not isinstance(data, ServiceError)
 
-    assert data["rec_id"] is not None
     assert data["account_id"] is not None
     assert data["username"] == username
     assert data["email_address"] == email_address
@@ -109,7 +106,6 @@ async def test_should_fetch_one(ctx: Context):
     data = await accounts.fetch_one(ctx, account_id=account_id)
     assert not isinstance(data, ServiceError)
 
-    assert data["rec_id"] is not None
     assert data["account_id"] == account_id
     assert data["username"] == username
     assert data["email_address"] == email_address
@@ -119,7 +115,7 @@ async def test_should_fetch_one(ctx: Context):
 
 
 async def test_should_fail_fetch_one_no_account(ctx: Context):
-    account_id = uuid4()
+    account_id = 1234
     data = await accounts.fetch_one(ctx, account_id=account_id)
     assert isinstance(data, ServiceError)
     assert data == ServiceError.ACCOUNTS_NOT_FOUND
@@ -149,7 +145,6 @@ async def test_should_partial_update(ctx: Context):
                                          username=new_username)
     assert not isinstance(data, ServiceError)
 
-    assert data["rec_id"] is not None
     assert data["account_id"] == account_id
     assert data["username"] == new_username
     assert data["email_address"] == email_address
@@ -159,7 +154,7 @@ async def test_should_partial_update(ctx: Context):
 
 
 async def test_should_fail_partial_update_no_account(ctx: Context):
-    account_id = uuid4()
+    account_id = 1234
     new_username = "partial_update2"
     data = await accounts.partial_update(ctx,
                                          account_id=account_id,
@@ -185,7 +180,6 @@ async def test_should_fail_partial_update_no_changes(ctx: Context):
                                          account_id=account_id)
     assert not isinstance(data, ServiceError)
 
-    assert data["rec_id"] is not None
     assert data["account_id"] == account_id
     assert data["username"] == username
     assert data["email_address"] == email_address
@@ -216,7 +210,7 @@ async def test_should_delete(ctx: Context):
 
 
 async def test_should_fail_delete_no_account(ctx: Context):
-    account_id = uuid4()
+    account_id = 1234
     data = await accounts.delete(ctx, account_id=account_id)
     assert isinstance(data, ServiceError)
     assert data == ServiceError.ACCOUNTS_NOT_FOUND

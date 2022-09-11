@@ -19,7 +19,7 @@ class CredentialsRepo:
 
     async def create(self,
                      credentials_id: UUID,
-                     account_id: UUID,
+                     account_id: int,
                      identifier_type: str,
                      identifier: str,
                      passphrase: str,
@@ -57,7 +57,7 @@ class CredentialsRepo:
         credentials = await self.ctx.db.fetch_one(query, params)
         return credentials
 
-    async def fetch_all(self, account_id: UUID | None = None,
+    async def fetch_all(self, account_id: int | None = None,
                         identifier_type: str | None = None,
                         status: Status | None = Status.ACTIVE
                         ) -> list[Mapping[str, Any]]:

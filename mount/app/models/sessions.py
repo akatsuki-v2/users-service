@@ -16,7 +16,7 @@ class LoginForm(BaseModel):
 
 class Session(BaseModel):
     session_id: UUID
-    account_id: UUID
+    account_id: int
     user_agent: str
     expires_at: datetime
     created_at: datetime

@@ -46,7 +46,7 @@ async def get_accounts(country: str | None = None,
 
 # https://osuakatsuki.atlassian.net/browse/V2-58
 @router.get("/v1/accounts/{account_id}", response_model=Account)
-async def get_account(account_id: UUID,
+async def get_account(account_id: int,
                       status: Status | None = None,
                       ctx: RequestContext = Depends()):
     data = await accounts.fetch_one(ctx, account_id, status=status)
@@ -59,7 +59,7 @@ async def get_account(account_id: UUID,
 
 # https://osuakatsuki.atlassian.net/browse/V2-59
 @router.patch("/v1/accounts/{account_id}", response_model=Account)
-async def partial_update_account(account_id: UUID, args: AccountUpdate,
+async def partial_update_account(account_id: int, args: AccountUpdate,
                                  ctx: RequestContext = Depends()):
     data = await accounts.partial_update(ctx, account_id, **args.dict())
     if isinstance(data, ServiceError):
@@ -71,7 +71,7 @@ async def partial_update_account(account_id: UUID, args: AccountUpdate,
 
 # https://osuakatsuki.atlassian.net/browse/V2-44
 @router.delete("v1/accounts/{account_id}", response_model=Account)
-async def delete_account(account_id: UUID, ctx: RequestContext = Depends()):
+async def delete_account(account_id: int, ctx: RequestContext = Depends()):
     data = await accounts.delete(ctx, account_id)
     if isinstance(data, ServiceError):
         return responses.failure(data, "Failed to delete account")
