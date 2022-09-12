@@ -1,4 +1,4 @@
-CREATE TABLE accounts_stats (
+CREATE TABLE statistics (
     account_id INTEGER NOT NULL,
     game_mode SMALLINT NOT NULL,
     total_score BIGINT NOT NULL,
