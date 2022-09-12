@@ -37,4 +37,5 @@ exec pytest tests/ \
     --cov-config=tests/coverage.ini \
     --cov=app \
     --cov-report=term \
-    --cov-report=html:tests/htmlcov
+    --cov-report=html:tests/htmlcov \
+    --pdb -vv
