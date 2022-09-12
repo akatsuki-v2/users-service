@@ -4,20 +4,20 @@ REPO_DIR = ..
 
 build: # build all containers
 	# @docker build -t user-gateway-service:latest $(REPO_DIR)/user-gateway-service
-	@docker build -t user-accounts-service:latest $(REPO_DIR)/user-accounts-service
+	@docker build -t users-service:latest $(REPO_DIR)/users-service
 
 clone: # clone all containers
 	# @if [ ! -d $(REPO_DIR)/user-gateway-service ]; then git clone git@github.com:akatsuki-v2/user-gateway-service.git $(REPO_DIR)/user-gateway-service; fi
-	@if [ ! -d $(REPO_DIR)/user-accounts-service ]; then git clone git@github.com:akatsuki-v2/user-accounts-service.git $(REPO_DIR)/user-accounts-service; fi
+	@if [ ! -d $(REPO_DIR)/users-service ]; then git clone git@github.com:akatsuki-v2/users-service.git $(REPO_DIR)/users-service; fi
 
 pull: # pull all containers
 	# cd $(REPO_DIR)/user-gateway-service && git pull
-	cd $(REPO_DIR)/user-accounts-service && git pull
+	cd $(REPO_DIR)/users-service && git pull
 
 run-bg: # run all containers in the background
 	@docker-compose up -d \
-		user-accounts-service \
-		postgres \
+		users-service \
+		postgres
 		# user-gateway-service \
 		# redis \
 		# rabbitmq \
@@ -25,8 +25,8 @@ run-bg: # run all containers in the background
 
 run: # run all containers in the foreground
 	@docker-compose up \
-		user-accounts-service \
-		postgres \
+		users-service \
+		postgres
 		# user-gateway-service \
 		# redis \
 		# rabbitmq \
@@ -36,7 +36,7 @@ logs: # attach to the containers live to view their logs
 	@docker-compose logs -f
 
 test: # run the tests
-	@docker-compose exec user-accounts-service /scripts/run-tests.sh
+	@docker-compose exec users-service /scripts/run-tests.sh
 
 test-dbg: # run the tests in debug mode
-	@docker-compose exec user-accounts-service /scripts/run-tests.sh --dbg
+	@docker-compose exec users-service /scripts/run-tests.sh --dbg

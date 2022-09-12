@@ -91,8 +91,8 @@ services:
   #     - ./../user-gateway-service/mount:/srv/root
   #     - ./../user-gateway-service/scripts:/scripts
 
-  user-accounts-service:
-    image: user-accounts-service:latest
+  users-service:
+    image: users-service:latest
     ports:
       - 11000:80
     environment:
