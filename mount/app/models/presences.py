@@ -1,7 +1,23 @@
+from enum import IntEnum
+
 from app.models import BaseModel
 
 
-# TODO: enum for action?
+class Action(IntEnum):
+    Idle = 0
+    Afk = 1
+    Playing = 2
+    Editing = 3
+    Modding = 4
+    Multiplayer = 5
+    Watching = 6
+    Unknown = 7
+    Testing = 8
+    Submitting = 9
+    Paused = 10
+    Lobby = 11
+    Multiplaying = 12
+    OsuDirect = 13
 
 
 class Presence(BaseModel):
@@ -10,7 +26,7 @@ class Presence(BaseModel):
     privileges: int
     latitude: float
     longitude: float
-    action: int
+    action: Action
     info_text: str
     map_md5: str
     map_id: int
@@ -23,7 +39,7 @@ class PresenceInput(BaseModel):
     privileges: int
     latitude: float
     longitude: float
-    action: int
+    action: Action
     info_text: str
     map_md5: str
     map_id: int
@@ -36,7 +52,7 @@ class PresenceUpdate(BaseModel):
     privileges: int | None
     latitude: float | None
     longitude: float | None
-    action: int | None
+    action: Action | None
     info_text: str | None
     map_md5: str | None
     map_id: int | None
