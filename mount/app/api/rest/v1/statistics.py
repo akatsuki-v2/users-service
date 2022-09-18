@@ -13,7 +13,8 @@ from fastapi import Depends
 router = APIRouter()
 
 
-@router.post("/v1/accounts/{account_id}/statistics", response_model=Success[Statistics])
+@router.post("/v1/accounts/{account_id}/statistics",
+             response_model=Success[Statistics])
 async def create_statistics(args: Statistics, ctx: RequestContext = Depends()):
     data = await statistics.create(ctx, args.account_id, args.game_mode,
                                    args.total_score, args.ranked_score,
@@ -29,7 +30,8 @@ async def create_statistics(args: Statistics, ctx: RequestContext = Depends()):
     return responses.success(resp)
 
 
-@router.get("/v1/accounts/{account_id}/statistics/{game_mode}", response_model=Success[Statistics])
+@router.get("/v1/accounts/{account_id}/statistics/{game_mode}",
+            response_model=Success[Statistics])
 async def fetch_one_statistics(account_id: int, game_mode: int,
                                ctx: RequestContext = Depends()):
     data = await statistics.fetch_one(ctx, account_id, game_mode)
@@ -40,8 +42,10 @@ async def fetch_one_statistics(account_id: int, game_mode: int,
     return responses.success(resp)
 
 
-@router.get("/v1/accounts/{account_id}/statistics", response_model=Success[list[Statistics]])
-async def fetch_all_account_statistics(account_id: int, ctx: RequestContext = Depends()):
+@router.get("/v1/accounts/{account_id}/statistics",
+            response_model=Success[list[Statistics]])
+async def fetch_all_account_statistics(account_id: int,
+                                       ctx: RequestContext = Depends()):
     data = await statistics.fetch_all(ctx, account_id)
     if isinstance(data, ServiceError):
         return responses.failure(data, "Failed to fetch statistics")
@@ -50,7 +54,8 @@ async def fetch_all_account_statistics(account_id: int, ctx: RequestContext = De
     return responses.success(resp)
 
 
-@router.patch("/v1/accounts/{account_id}/statistics/{game_mode}", response_model=Success[Statistics])
+@router.patch("/v1/accounts/{account_id}/statistics/{game_mode}",
+              response_model=Success[Statistics])
 async def partial_update_statistics(account_id: int, game_mode: int,
                                     args: StatisticsUpdate,
                                     ctx: RequestContext = Depends()):
@@ -71,6 +76,18 @@ async def partial_update_statistics(account_id: int, game_mode: int,
                                            a_count=args.a_count)
     if isinstance(data, ServiceError):
         return responses.failure(data, "Failed to update statistics")
+
+    resp = Statistics.from_mapping(data)
+    return responses.success(resp)
+
+
+@router.delete("/v1/accounts/{account_id}/statistics/{game_mode}",
+               response_model=Success[Statistics])
+async def delete_statistics(account_id: int, game_mode: int,
+                            ctx: RequestContext = Depends()):
+    data = await statistics.delete(ctx, account_id, game_mode)
+    if isinstance(data, ServiceError):
+        return responses.failure(data, "Failed to delete statistics")
 
     resp = Statistics.from_mapping(data)
     return responses.success(resp)
