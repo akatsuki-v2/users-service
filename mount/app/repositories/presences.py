@@ -65,10 +65,15 @@ class PresencesRepo:
         if presence is None:
             return None
 
+        if not kwargs:
+            return presence
+
         presence = dict(presence)
         presence.update(kwargs)
+        presence["updated_at"] = datetime.now()
 
-        await self.ctx.redis.set(create_presence_key(session_id), json.dumps(presence))
+        await self.ctx.redis.set(create_presence_key(session_id),
+                                 json.dumps(presence))
 
         if expires_at := kwargs.get("expires_at"):  # maybe a bit weird?
             await self.ctx.redis.expireat(create_presence_key(session_id),
