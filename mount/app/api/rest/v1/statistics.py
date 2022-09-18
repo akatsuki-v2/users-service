@@ -13,7 +13,7 @@ from fastapi import Depends
 router = APIRouter()
 
 
-@router.post("/v1/accounts", response_model=Statistics)
+@router.post("/v1/accounts/{account_id}/statistics", response_model=Statistics)
 async def create_statistics(args: Statistics, ctx: RequestContext = Depends()):
     data = await statistics.create(ctx, args.account_id, args.game_mode,
                                    args.total_score, args.ranked_score,
