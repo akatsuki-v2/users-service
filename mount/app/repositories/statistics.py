@@ -6,7 +6,7 @@ from typing import Mapping
 from app.common.context import Context
 
 
-class Statistics:
+class StatisticsRepo:
     READ_PARAMS = """\
         account_id, game_mode, total_score, ranked_score, performance,
         play_count, play_time, accuracy, max_combo, total_hits, replay_views,
