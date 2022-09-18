@@ -61,20 +61,7 @@ async def partial_update_statistics(account_id: int, game_mode: int,
                                     args: StatisticsUpdate,
                                     ctx: RequestContext = Depends()):
     data = await statistics.partial_update(ctx, account_id, game_mode,
-                                           total_score=args.total_score,
-                                           ranked_score=args.ranked_score,
-                                           performance=args.performance,
-                                           play_count=args.play_count,
-                                           play_time=args.play_time,
-                                           accuracy=args.accuracy,
-                                           max_combo=args.max_combo,
-                                           total_hits=args.total_hits,
-                                           replay_views=args.replay_views,
-                                           xh_count=args.xh_count,
-                                           x_count=args.x_count,
-                                           sh_count=args.sh_count,
-                                           s_count=args.s_count,
-                                           a_count=args.a_count)
+                                           **args.dict())
     if isinstance(data, ServiceError):
         return responses.failure(data, "Failed to update statistics")
 

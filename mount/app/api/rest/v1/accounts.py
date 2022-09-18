@@ -18,11 +18,7 @@ router = APIRouter()
 # https://osuakatsuki.atlassian.net/browse/V2-10
 @router.post("/v1/accounts", response_model=Success[Account])
 async def sign_up(args: SignupForm, ctx: RequestContext = Depends()):
-    data = await accounts.sign_up(ctx,
-                                  args.username,
-                                  args.password,
-                                  args.email_address,
-                                  args.country)
+    data = await accounts.sign_up(ctx, **args.dict())
     if isinstance(data, ServiceError):
         return responses.failure(data, "Failed to signup for account")
 

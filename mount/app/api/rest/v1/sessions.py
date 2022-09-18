@@ -19,10 +19,7 @@ router = APIRouter()
 # https://osuakatsuki.atlassian.net/browse/V2-11
 @router.post("/v1/sessions", response_model=Success[Session])
 async def log_in(args: LoginForm, ctx: RequestContext = Depends()):
-    data = await sessions.log_in(ctx,
-                                 args.username,
-                                 args.password,
-                                 args.user_agent)
+    data = await sessions.log_in(ctx, **args.dict())
     if isinstance(data, ServiceError):
         return responses.failure(data, "Failed to create session")
 
