@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from uuid import UUID
-
 from app.api.rest.context import RequestContext
 from app.common import responses
 from app.common.errors import ServiceError
