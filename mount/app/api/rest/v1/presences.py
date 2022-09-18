@@ -37,6 +37,16 @@ async def fetch_one(session_id: UUID, ctx: RequestContext = Depends()):
     return responses.success(resp)
 
 
+@router.get("/v1/presences", response_model=Success[list[Presence]])
+async def fetch_all(ctx: RequestContext = Depends()):
+    data = await presences.fetch_all(ctx)
+    if isinstance(data, ServiceError):
+        return responses.failure(data, "Failed to fetch presences")
+
+    resp = [Presence.from_mapping(p) for p in data]
+    return responses.success(resp)
+
+
 @router.patch("/v1/presences/{session_id}", response_model=Success[Presence])
 async def partial_update_presence(session_id: UUID, args: PresenceUpdate,
                                   ctx: RequestContext = Depends()):

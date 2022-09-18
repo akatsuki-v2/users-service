@@ -65,6 +65,14 @@ async def fetch_one(ctx: Context, session_id: UUID) -> Mapping[str, Any] | Servi
     return presence
 
 
+async def fetch_all(ctx: Context) -> list[Mapping[str, Any]]:
+    repo = PresencesRepo(ctx)
+
+    presences = await repo.fetch_all()
+
+    return presences
+
+
 async def partial_update(ctx: Context, session_id: UUID, **kwargs: Any | None
                          ) -> Mapping[str, Any] | ServiceError:
     repo = PresencesRepo(ctx)
