@@ -25,7 +25,11 @@ async def create(ctx: Context,
                  info_text: str,
                  map_md5: str,
                  map_id: int,
-                 mods: int) -> Mapping[str, Any] | ServiceError:
+                 mods: int,
+                 osu_version: str,
+                 utc_offset: int,
+                 display_city: bool,
+                 pm_private: bool) -> Mapping[str, Any] | ServiceError:
     p_repo = PresencesRepo(ctx)
     s_repo = SessionsRepo(ctx)
 
@@ -46,6 +50,10 @@ async def create(ctx: Context,
                                        map_md5=map_md5,
                                        map_id=map_id,
                                        mods=mods,
+                                       osu_version=osu_version,
+                                       utc_offset=utc_offset,
+                                       display_city=display_city,
+                                       pm_private=pm_private,
                                        expires_at=expires_at)
     except Exception as exc:
         logging.error("Unable to create presence:", error=exc)

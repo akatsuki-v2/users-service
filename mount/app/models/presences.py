@@ -34,6 +34,11 @@ class Presence(BaseModel):
     map_id: int
     mods: int
 
+    osu_version: str
+    utc_offset: int
+    display_city: bool
+    pm_private: bool
+
 
 class PresenceInput(BaseModel):
     session_id: UUID
@@ -48,6 +53,11 @@ class PresenceInput(BaseModel):
     map_id: int
     mods: int
 
+    osu_version: str
+    utc_offset: int
+    display_city: bool
+    pm_private: bool
+
 
 class PresenceUpdate(BaseModel):
     game_mode: int | None
@@ -60,3 +70,8 @@ class PresenceUpdate(BaseModel):
     map_md5: str | None
     map_id: int | None
     mods: int | None
+
+    osu_version: str | None
+    utc_offset: int | None
+    display_city: bool | None
+    pm_private: bool | None

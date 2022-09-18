@@ -30,6 +30,10 @@ class PresencesRepo:
                      map_md5: str,
                      map_id: int,
                      mods: int,
+                     osu_version: str,
+                     utc_offset: int,
+                     display_city: bool,
+                     pm_private: bool,
                      expires_at: datetime) -> Mapping[str, Any]:
         now = datetime.now()
         session = {
@@ -45,6 +49,12 @@ class PresencesRepo:
             "map_md5": map_md5,
             "map_id": map_id,
             "mods": mods,
+
+            "osu_version": osu_version,
+            "utc_offset": utc_offset,
+            "display_city": display_city,
+            "pm_private": pm_private,
+
             "created_at": now,
             "updated_at": now,
         }
