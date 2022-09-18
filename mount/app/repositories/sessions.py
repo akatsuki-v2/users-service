@@ -52,8 +52,12 @@ class SessionsRepo:
         if session is None:
             return None
 
+        if not kwargs:
+            return session
+
         session = dict(session)
         session.update(kwargs)
+        session["updated_at"] = datetime.now()
 
         await self.ctx.redis.set(create_session_key(session_id), json.dumps(session))
 
