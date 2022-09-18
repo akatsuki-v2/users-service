@@ -5,6 +5,7 @@ from app.common import responses
 from app.common.errors import ServiceError
 from app.common.responses import Success
 from app.models.statistics import Statistics
+from app.models.statistics import StatisticsInput
 from app.models.statistics import StatisticsUpdate
 from app.usecases import statistics
 from fastapi import APIRouter
@@ -15,7 +16,7 @@ router = APIRouter()
 
 @router.post("/v1/accounts/{account_id}/statistics",
              response_model=Success[Statistics])
-async def create_statistics(args: Statistics, ctx: RequestContext = Depends()):
+async def create_statistics(args: StatisticsInput, ctx: RequestContext = Depends()):
     data = await statistics.create(ctx, args.account_id, args.game_mode,
                                    args.total_score, args.ranked_score,
                                    args.performance, args.play_count,
