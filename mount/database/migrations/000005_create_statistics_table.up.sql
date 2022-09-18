@@ -15,5 +15,8 @@ CREATE TABLE statistics (
     sh_count INT NOT NULL,
     s_count INT NOT NULL,
     a_count INT NOT NULL,
+    status VARCHAR(64) NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
     PRIMARY KEY (account_id, game_mode)
 );
