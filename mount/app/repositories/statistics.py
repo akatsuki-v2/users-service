@@ -117,15 +117,18 @@ class Statistics:
         statistics = await self.ctx.db.fetch_one(query, params)
         return statistics
 
-    # TODO: not sure this makes sense? maybe it should match their account status?
-    # async def delete(self, account_id: int, game_mode: int) -> None:
-    #     query = """\
-    #         DELETE FROM statistics
-    #          WHERE account_id = :account_id
-    #            AND game_mode = :game_mode
-    #     """
-    #     params = {
-    #         "account_id": account_id,
-    #         "game_mode": game_mode,
-    #     }
-    #     await self.ctx.db.execute(query, params)
+    async def delete(self, account_id: int, game_mode: int) -> Mapping[str, Any] | None:
+        query = f"""\
+            UPDATE statistics
+               SET status = 'deleted',
+                   updated_at = CURRENT_TIMESTAMP,
+             WHERE account_id = :account_id
+               AND game_mode = :game_mode
+         RETURNING {self.READ_PARAMS}
+        """
+        params = {
+            "account_id": account_id,
+            "game_mode": game_mode,
+        }
+        statistics = await self.ctx.db.fetch_one(query, params)
+        return statistics
