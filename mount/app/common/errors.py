@@ -23,7 +23,7 @@ class ServiceError(str, Enum):
     SESSIONS_CANNOT_DELETE = 'sessions.cannot_delete'
     SESSIONS_NOT_FOUND = 'sessions.not_found'
 
-    STATISTICS_CANNOT_CREATE = 'statistics.cannot_create'
-    STATISTICS_CANNOT_DELETE = 'statistics.cannot_delete'
-    STATISTICS_NOT_FOUND = 'statistics.not_found'
-    STATISTICS_ALREADY_EXISTS = 'statistics.already_exists'
+    STATS_CANNOT_CREATE = 'stats.cannot_create'
+    STATS_CANNOT_DELETE = 'stats.cannot_delete'
+    STATS_NOT_FOUND = 'stats.not_found'
+    STATS_ALREADY_EXISTS = 'stats.already_exists'

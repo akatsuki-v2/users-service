@@ -4,7 +4,7 @@ from . import BaseModel
 from . import Status
 
 
-class Statistics(BaseModel):
+class Stats(BaseModel):
     account_id: int
     game_mode: int
     total_score: int
@@ -27,7 +27,7 @@ class Statistics(BaseModel):
     updated_at: datetime
 
 
-class StatisticsInput(BaseModel):
+class StatsInput(BaseModel):
     game_mode: int
     total_score: int
     ranked_score: int
@@ -45,7 +45,7 @@ class StatisticsInput(BaseModel):
     a_count: int
 
 
-class StatisticsUpdate(BaseModel):
+class StatsUpdate(BaseModel):
     total_score: int | None
     ranked_score: int | None
     performance: int | None

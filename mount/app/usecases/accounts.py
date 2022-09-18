@@ -13,7 +13,7 @@ from app.common.errors import ServiceError
 from app.models import Status
 from app.repositories.accounts import AccountsRepo
 from app.repositories.credentials import CredentialsRepo
-from app.repositories.statistics import StatisticsRepo
+from app.repositories.stats import StatsRepo
 
 
 async def sign_up(ctx: Context,
@@ -23,7 +23,7 @@ async def sign_up(ctx: Context,
                   country: str) -> Mapping[str, Any] | ServiceError:
     a_repo = AccountsRepo(ctx)
     c_repo = CredentialsRepo(ctx)
-    s_repo = StatisticsRepo(ctx)
+    s_repo = StatsRepo(ctx)
 
     # perform data validation
 
@@ -68,7 +68,7 @@ async def sign_up(ctx: Context,
                                 identifier=identifier,
                                 passphrase=passphrase)
 
-        # create statistics for each game mode for the user
+        # create stats for each game mode for the user
         for mode in (0, 1, 2, 3, 4, 5, 6, 7):
             await s_repo.create(account_id=account_id,
                                 game_mode=mode,
@@ -180,7 +180,7 @@ async def partial_update(ctx: Context,
 async def delete(ctx: Context, account_id: int) -> Mapping[str, Any] | ServiceError:
     a_repo = AccountsRepo(ctx)
     c_repo = CredentialsRepo(ctx)
-    s_repo = StatisticsRepo(ctx)
+    s_repo = StatsRepo(ctx)
 
     transaction = await ctx.db.transaction()
 
@@ -196,8 +196,8 @@ async def delete(ctx: Context, account_id: int) -> Mapping[str, Any] | ServiceEr
             assert credentials is not None
 
         for mode in (0, 1, 2, 3, 4, 5, 6, 7):
-            statistics = await s_repo.delete(account_id=account_id, game_mode=mode)
-            assert statistics is not None
+            stats = await s_repo.delete(account_id=account_id, game_mode=mode)
+            assert stats is not None
 
     except Exception as exc:  # pragma: no cover
         await transaction.rollback()
