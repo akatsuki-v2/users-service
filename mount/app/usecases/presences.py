@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import traceback
 from collections.abc import Mapping
+from datetime import datetime
 from typing import Any
 from uuid import UUID
 
@@ -33,6 +34,7 @@ async def create(ctx: Context,
         return ServiceError.SESSIONS_NOT_FOUND
 
     try:
+        expires_at = datetime.fromisoformat(session["expires_at"])
         presence = await p_repo.create(session_id=session_id,
                                        game_mode=game_mode,
                                        country_code=country_code,
@@ -44,7 +46,7 @@ async def create(ctx: Context,
                                        map_md5=map_md5,
                                        map_id=map_id,
                                        mods=mods,
-                                       expires_at=session["expires_at"])
+                                       expires_at=expires_at)
     except Exception as exc:
         logging.error("Unable to create presence:", error=exc)
         logging.error("Stack trace: ", error=traceback.format_exc())
