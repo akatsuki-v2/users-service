@@ -33,8 +33,8 @@ async def create_statistics(account_id: int, args: StatisticsInput, ctx: Request
 
 @router.get("/v1/accounts/{account_id}/statistics/{game_mode}",
             response_model=Success[Statistics])
-async def fetch_one_statistics(account_id: int, game_mode: int,
-                               ctx: RequestContext = Depends()):
+async def fetch_statistics(account_id: int, game_mode: int,
+                           ctx: RequestContext = Depends()):
     data = await statistics.fetch_one(ctx, account_id, game_mode)
     if isinstance(data, ServiceError):
         return responses.failure(data, "Failed to fetch statistics")
