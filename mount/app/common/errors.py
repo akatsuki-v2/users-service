@@ -26,3 +26,4 @@ class ServiceError(str, Enum):
     STATISTICS_CANNOT_CREATE = 'statistics.cannot_create'
     STATISTICS_CANNOT_DELETE = 'statistics.cannot_delete'
     STATISTICS_NOT_FOUND = 'statistics.not_found'
+    STATISTICS_ALREADY_EXISTS = 'statistics.already_exists'

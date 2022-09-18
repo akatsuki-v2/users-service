@@ -27,6 +27,10 @@ async def create(ctx: Context,
                  a_count: int) -> Mapping[str, Any] | ServiceError:
     repo = StatisticsRepo(ctx)
 
+    statistics = await repo.fetch_one(account_id, game_mode)
+    if statistics is not None:
+        return ServiceError.STATISTICS_ALREADY_EXISTS
+
     statistics = await repo.create(account_id, game_mode, total_score,
                                    ranked_score, performance, play_count,
                                    play_time, accuracy, max_combo, total_hits,
