@@ -4,6 +4,7 @@ from typing import Any
 from typing import Mapping
 
 from app.common.context import Context
+from app.models import Status
 
 
 class StatisticsRepo:
@@ -32,17 +33,19 @@ class StatisticsRepo:
                      x_count: int,
                      sh_count: int,
                      s_count: int,
-                     a_count: int) -> Mapping[str, Any]:
+                     a_count: int,
+                     status: Status = Status.ACTIVE) -> Mapping[str, Any]:
         query = f"""\
             INSERT INTO statistics (account_id, game_mode, total_score,
                                     ranked_score, performance, play_count,
                                     play_time, accuracy, max_combo,
                                     total_hits, replay_views, xh_count,
-                                    x_count, sh_count, s_count, a_count)
+                                    x_count, sh_count, s_count, a_count,
+                                    status)
                  VALUES (:account_id, :game_mode, :total_score, :ranked_score,
                          :performance, :play_count, :play_time, :accuracy,
                          :max_combo, :total_hits, :replay_views, :xh_count,
-                         :x_count, :sh_count, :s_count, :a_count)
+                         :x_count, :sh_count, :s_count, :a_count, :status)
               RETURNING {self.READ_PARAMS}
         """
         params = {
@@ -62,6 +65,7 @@ class StatisticsRepo:
             "sh_count": sh_count,
             "s_count": s_count,
             "a_count": a_count,
+            "status": status,
         }
         statistics = await self.ctx.db.fetch_one(query, params)
         assert statistics is not None
