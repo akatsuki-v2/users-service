@@ -91,8 +91,8 @@ class StatisticsRepo:
         query = f"""\
             SELECT {self.READ_PARAMS}
               FROM statistics
-             WHERE COALESCE(:account_id, account_id),
-                   COALESCE(:game_mode, game_mode)
+             WHERE account_id = COALESCE(:account_id, account_id)
+               AND game_mode = COALESCE(:game_mode, game_mode)
         """
         params = {
             "account_id": account_id,
