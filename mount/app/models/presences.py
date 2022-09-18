@@ -1,4 +1,5 @@
 from enum import IntEnum
+from uuid import UUID
 
 from app.models import BaseModel
 
@@ -21,6 +22,7 @@ class Action(IntEnum):
 
 
 class Presence(BaseModel):
+    session_id: UUID
     game_mode: int
     country_code: str
     privileges: int
@@ -34,6 +36,7 @@ class Presence(BaseModel):
 
 
 class PresenceInput(BaseModel):
+    session_id: UUID
     game_mode: int
     country_code: str
     privileges: int
