@@ -22,9 +22,10 @@ class Account(BaseModel):
     safe_username: str  # NOTE: generated column
     email_address: str
     country: str
+
+    status: Status
     created_at: datetime
     updated_at: datetime
-    status: Status
 
 
 class AccountUpdate(BaseModel):
