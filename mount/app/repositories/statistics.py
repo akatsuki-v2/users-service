@@ -11,7 +11,8 @@ class StatisticsRepo:
     READ_PARAMS = """\
         account_id, game_mode, total_score, ranked_score, performance,
         play_count, play_time, accuracy, max_combo, total_hits, replay_views,
-        xh_count, x_count, sh_count, s_count, a_count
+        xh_count, x_count, sh_count, s_count, a_count, status, created_at,
+        updated_at
     """
 
     def __init__(self, ctx: Context) -> None:
