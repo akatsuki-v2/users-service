@@ -28,7 +28,6 @@ class Statistics(BaseModel):
 
 
 class StatisticsInput(BaseModel):
-    account_id: int
     game_mode: int
     total_score: int
     ranked_score: int

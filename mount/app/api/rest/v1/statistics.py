@@ -16,8 +16,8 @@ router = APIRouter()
 
 @router.post("/v1/accounts/{account_id}/statistics",
              response_model=Success[Statistics])
-async def create_statistics(args: StatisticsInput, ctx: RequestContext = Depends()):
-    data = await statistics.create(ctx, args.account_id, args.game_mode,
+async def create_statistics(account_id: int, args: StatisticsInput, ctx: RequestContext = Depends()):
+    data = await statistics.create(ctx, account_id, args.game_mode,
                                    args.total_score, args.ranked_score,
                                    args.performance, args.play_count,
                                    args.play_time, args.accuracy, args.max_combo,
