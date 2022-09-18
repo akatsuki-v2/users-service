@@ -70,7 +70,7 @@ async def partial_update_account(account_id: int, args: AccountUpdate,
 
 
 # https://osuakatsuki.atlassian.net/browse/V2-44
-@router.delete("v1/accounts/{account_id}", response_model=Account)
+@router.delete("/v1/accounts/{account_id}", response_model=Account)
 async def delete_account(account_id: int, ctx: RequestContext = Depends()):
     data = await accounts.delete(ctx, account_id)
     if isinstance(data, ServiceError):
