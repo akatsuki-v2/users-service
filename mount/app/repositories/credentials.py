@@ -90,14 +90,14 @@ class CredentialsRepo:
         credentials = await self.ctx.db.fetch_one(query, params)
         return credentials
 
-    async def delete(self, resource_id: UUID) -> Mapping[str, Any] | None:
+    async def delete(self, credentials_id: UUID) -> Mapping[str, Any] | None:
         query = f"""\
-            UPDATE resources
+            UPDATE credentials
                SET status = 'deleted',
                    updated_at = CURRENT_TIMESTAMP
-             WHERE resource_id = :resource_id
+             WHERE credentials_id = :credentials_id
          RETURNING {self.READ_PARAMS}
         """
-        params = {"resource_id": resource_id}
-        resource = await self.ctx.db.fetch_one(query, params)
-        return resource
+        params = {"credentials_id": credentials_id}
+        credentials = await self.ctx.db.fetch_one(query, params)
+        return credentials
