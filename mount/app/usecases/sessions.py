@@ -16,21 +16,21 @@ from app.repositories.sessions import SessionsRepo
 
 
 async def log_in(ctx: Context,
-                 username: str,
-                 password: str,
+                 identifier: str,
+                 passphrase: str,
                  user_agent: str,
                  ) -> Mapping[str, Any] | ServiceError:
     s_repo = SessionsRepo(ctx)
     c_repo = CredentialsRepo(ctx)
 
-    credentials = await c_repo.fetch_one(identifier=username)
+    credentials = await c_repo.fetch_one(identifier=identifier)
     if credentials is None:
         return ServiceError.CREDENTIALS_NOT_FOUND
 
     account_id = credentials["account_id"]
     hashed_password = credentials["passphrase"]
 
-    if not await security.check_password(password, hashed_password):
+    if not await security.check_password(passphrase, hashed_password):
         return ServiceError.CREDENTIALS_INCORRECT
 
     try:
