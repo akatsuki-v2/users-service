@@ -88,7 +88,6 @@ class Statistics:
               FROM statistics
              WHERE COALESCE(:account_id, account_id),
                    COALESCE(:game_mode, game_mode)
-             WHERE account_id = :account_id
         """
         params = {
             "account_id": account_id,
