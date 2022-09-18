@@ -13,6 +13,7 @@ from app.common.errors import ServiceError
 from app.models import Status
 from app.repositories.accounts import AccountsRepo
 from app.repositories.credentials import CredentialsRepo
+from app.repositories.statistics import StatisticsRepo
 
 
 async def sign_up(ctx: Context,
@@ -22,6 +23,7 @@ async def sign_up(ctx: Context,
                   country: str) -> Mapping[str, Any] | ServiceError:
     a_repo = AccountsRepo(ctx)
     c_repo = CredentialsRepo(ctx)
+    s_repo = StatisticsRepo(ctx)
 
     # perform data validation
 
@@ -49,6 +51,7 @@ async def sign_up(ctx: Context,
         account = await a_repo.create(username=username,
                                       email_address=email_address,
                                       country=country)
+        account_id = account["account_id"]
 
         hashed_password = await security.hash_password(password)
 
@@ -60,10 +63,29 @@ async def sign_up(ctx: Context,
         ):
             credentials_id = uuid4()
             await c_repo.create(credentials_id=credentials_id,
-                                account_id=account["account_id"],
+                                account_id=account_id,
                                 identifier_type=identifier_type,
                                 identifier=identifier,
                                 passphrase=passphrase)
+
+        # create statistics for each game mode for the user
+        for mode in (0, 1, 2, 3, 4, 5, 6, 7):
+            await s_repo.create(account_id=account_id,
+                                game_mode=mode,
+                                total_score=0,
+                                ranked_score=0,
+                                performance=0,
+                                play_count=0,
+                                play_time=0,
+                                accuracy=0.0,
+                                max_combo=0,
+                                total_hits=0,
+                                replay_views=0,
+                                xh_count=0,
+                                x_count=0,
+                                sh_count=0,
+                                s_count=0,
+                                a_count=0)
 
     except Exception as exc:  # pragma: no cover
         await transaction.rollback()
@@ -142,6 +164,10 @@ async def partial_update(ctx: Context,
 
         updates["country"] = new_country
 
+    new_status = kwargs.get("status")
+    if new_status is not None and new_status != account["status"]:
+        updates["status"] = new_status
+
     if not updates:
         # return the account as-is
         return account
@@ -152,10 +178,33 @@ async def partial_update(ctx: Context,
 
 
 async def delete(ctx: Context, account_id: int) -> Mapping[str, Any] | ServiceError:
-    repo = AccountsRepo(ctx)
+    a_repo = AccountsRepo(ctx)
+    c_repo = CredentialsRepo(ctx)
+    s_repo = StatisticsRepo(ctx)
 
-    account = await repo.delete(account_id)
-    if account is None:
-        return ServiceError.ACCOUNTS_NOT_FOUND
+    transaction = await ctx.db.transaction()
+
+    try:
+        account = await a_repo.delete(account_id)
+        if account is None:
+            return ServiceError.ACCOUNTS_NOT_FOUND
+
+        all_active_credentials = await c_repo.fetch_all(account_id=account_id,
+                                                        status=Status.ACTIVE)
+        for active_credentials in all_active_credentials:
+            credentials = await c_repo.delete(active_credentials["credentials_id"])
+            assert credentials is not None
+
+        for mode in (0, 1, 2, 3, 4, 5, 6, 7):
+            statistics = await s_repo.delete(account_id=account_id, game_mode=mode)
+            assert statistics is not None
+
+    except Exception as exc:  # pragma: no cover
+        await transaction.rollback()
+        logging.error("Unable to delete account:", error=exc)
+        logging.error("Stack trace: ", error=traceback.format_exc())
+        return ServiceError.ACCOUNTS_CANNOT_DELETE
+    else:
+        await transaction.commit()
 
     return account

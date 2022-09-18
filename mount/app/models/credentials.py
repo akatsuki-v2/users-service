@@ -25,6 +25,7 @@ class Credentials(BaseModel):
     identifier_type: IdentifierType
     identifier: str
     passphrase: str
+
     status: Status
     created_at: datetime
     updated_at: datetime
