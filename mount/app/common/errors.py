@@ -30,3 +30,5 @@ class ServiceError(str, Enum):
 
     PRESENCES_CANNOT_CREATE = 'presences.cannot_create'
     PRESENCES_NOT_FOUND = 'presences.not_found'
+
+    QUEUED_PACKETS_NONE_REMAINING = 'queued_packets.none_remaining'
