@@ -18,7 +18,10 @@ router = APIRouter()
 # https://osuakatsuki.atlassian.net/browse/V2-10
 @router.post("/v1/accounts", response_model=Success[Account])
 async def sign_up(args: SignupForm, ctx: RequestContext = Depends()):
-    data = await accounts.sign_up(ctx, **args.dict())
+    data = await accounts.sign_up(ctx, username=args.username,
+                                  password=args.password,
+                                  email_address=args.email_address,
+                                  country=args.country)
     if isinstance(data, ServiceError):
         return responses.failure(data, "Failed to signup for account")
 
@@ -35,7 +38,7 @@ async def get_accounts(country: str | None = None,
     if isinstance(data, ServiceError):
         return responses.failure(data, "Failed to get accounts")
 
-    resp = [Account.from_mapping(acc) for acc in data]
+    resp = [Account.from_mapping(rec) for rec in data]
     return responses.success(resp)
 
 
@@ -56,7 +59,11 @@ async def get_account(account_id: int,
 @router.patch("/v1/accounts/{account_id}", response_model=Success[Account])
 async def partial_update_account(account_id: int, args: AccountUpdate,
                                  ctx: RequestContext = Depends()):
-    data = await accounts.partial_update(ctx, account_id, **args.dict())
+    data = await accounts.partial_update(ctx, account_id,
+                                         username=args.username,
+                                         email_address=args.email_address,
+                                         country=args.country,
+                                         status=args.status)
     if isinstance(data, ServiceError):
         return responses.failure(data, "Failed to update account")
 

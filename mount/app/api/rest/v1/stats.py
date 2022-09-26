@@ -51,7 +51,7 @@ async def fetch_all_account_stats(account_id: int,
     if isinstance(data, ServiceError):
         return responses.failure(data, "Failed to fetch stats")
 
-    resp = [Stats.from_mapping(d) for d in data]
+    resp = [Stats.from_mapping(rec) for rec in data]
     return responses.success(resp)
 
 
@@ -61,7 +61,21 @@ async def partial_update_stats(account_id: int, game_mode: int,
                                args: StatsUpdate,
                                ctx: RequestContext = Depends()):
     data = await stats.partial_update(ctx, account_id, game_mode,
-                                      **args.dict())
+                                      total_score=args.total_score,
+                                      ranked_score=args.ranked_score,
+                                      performance=args.performance,
+                                      play_count=args.play_count,
+                                      play_time=args.play_time,
+                                      accuracy=args.accuracy,
+                                      max_combo=args.max_combo,
+                                      total_hits=args.total_hits,
+                                      replay_views=args.replay_views,
+                                      xh_count=args.xh_count,
+                                      x_count=args.x_count,
+                                      sh_count=args.sh_count,
+                                      s_count=args.s_count,
+                                      a_count=args.a_count,
+                                      status=args.status)
     if isinstance(data, ServiceError):
         return responses.failure(data, "Failed to update stats")
 
@@ -69,8 +83,8 @@ async def partial_update_stats(account_id: int, game_mode: int,
     return responses.success(resp)
 
 
-@router.delete("/v1/accounts/{account_id}/stats/{game_mode}",
-               response_model=Success[Stats])
+@ router.delete("/v1/accounts/{account_id}/stats/{game_mode}",
+                response_model=Success[Stats])
 async def delete_stats(account_id: int, game_mode: int,
                        ctx: RequestContext = Depends()):
     data = await stats.delete(ctx, account_id, game_mode)

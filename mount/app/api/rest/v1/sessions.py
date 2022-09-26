@@ -6,6 +6,7 @@ from app.api.rest.context import RequestContext
 from app.common import responses
 from app.common.errors import ServiceError
 from app.common.responses import Success
+from app.models import BaseModel
 from app.models.sessions import LoginForm
 from app.models.sessions import Session
 from app.models.sessions import SessionUpdate
@@ -19,7 +20,9 @@ router = APIRouter()
 # https://osuakatsuki.atlassian.net/browse/V2-11
 @router.post("/v1/sessions", response_model=Success[Session])
 async def log_in(args: LoginForm, ctx: RequestContext = Depends()):
-    data = await sessions.log_in(ctx, **args.dict())
+    data = await sessions.log_in(ctx, identifier=args.identifier,
+                                 passphrase=args.passphrase,
+                                 user_agent=args.user_agent)
     if isinstance(data, ServiceError):
         return responses.failure(data, "Failed to create session")
 
@@ -42,7 +45,8 @@ async def log_out(session_id: UUID, ctx: RequestContext = Depends()):
 @router.patch("/v1/sessions/{session_id}", response_model=Success[Session])
 async def partial_update_session(session_id: UUID, args: SessionUpdate,
                                  ctx: RequestContext = Depends()):
-    data = await sessions.partial_update(ctx, session_id, **args.dict())
+    data = await sessions.partial_update(ctx, session_id,
+                                         expires_at=args.expires_at)
     if isinstance(data, ServiceError):
         return responses.failure(data, "Failed to update session")
 

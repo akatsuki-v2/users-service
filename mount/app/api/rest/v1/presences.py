@@ -19,7 +19,21 @@ router = APIRouter()
 @router.post("/v1/presences", response_model=Success[Presence])
 async def create_presence(args: PresenceInput,
                           ctx: RequestContext = Depends()):
-    data = await presences.create(ctx, **args.dict())
+    data = await presences.create(ctx, session_id=args.session_id,
+                                  game_mode=args.game_mode,
+                                  country_code=args.country_code,
+                                  privileges=args.privileges,
+                                  latitude=args.latitude,
+                                  longitude=args.longitude,
+                                  action=args.action,
+                                  info_text=args.info_text,
+                                  map_md5=args.map_md5,
+                                  map_id=args.map_id,
+                                  mods=args.mods,
+                                  osu_version=args.osu_version,
+                                  utc_offset=args.utc_offset,
+                                  display_city=args.display_city,
+                                  pm_private=args.pm_private)
     if isinstance(data, ServiceError):
         return responses.failure(data, "Failed to create presence")
 
@@ -43,14 +57,28 @@ async def fetch_all(ctx: RequestContext = Depends()):
     if isinstance(data, ServiceError):
         return responses.failure(data, "Failed to fetch presences")
 
-    resp = [Presence.from_mapping(p) for p in data]
+    resp = [Presence.from_mapping(rec) for rec in data]
     return responses.success(resp)
 
 
 @router.patch("/v1/presences/{session_id}", response_model=Success[Presence])
 async def partial_update_presence(session_id: UUID, args: PresenceUpdate,
                                   ctx: RequestContext = Depends()):
-    data = await presences.partial_update(ctx, session_id, **args.dict())
+    data = await presences.partial_update(ctx, session_id,
+                                          game_mode=args.game_mode,
+                                          country_code=args.country_code,
+                                          privileges=args.privileges,
+                                          latitude=args.latitude,
+                                          longitude=args.longitude,
+                                          action=args.action,
+                                          info_text=args.info_text,
+                                          map_md5=args.map_md5,
+                                          map_id=args.map_id,
+                                          mods=args.mods,
+                                          osu_version=args.osu_version,
+                                          utc_offset=args.utc_offset,
+                                          display_city=args.display_city,
+                                          pm_private=args.pm_private)
     if isinstance(data, ServiceError):
         return responses.failure(data, "Failed to update presence")
 
