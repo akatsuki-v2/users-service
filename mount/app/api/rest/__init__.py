@@ -72,8 +72,9 @@ def init_middlewares(api: FastAPI) -> None:
 
     @api.middleware("http")
     async def add_db_to_request(request: Request, call_next):
-        request.state.db = request.app.state.db
-        response = await call_next(request)
+        async with request.app.state.db.connection() as conn:
+            request.state.db = conn
+            response = await call_next(request)
         return response
 
     @api.middleware("http")

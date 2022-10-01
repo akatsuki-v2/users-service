@@ -6,7 +6,7 @@ from typing import Mapping
 from typing import Type
 
 from databases import Database
-from databases.core import Transaction
+from databases.core import Transaction, Connection
 
 
 def _create_pool(dsn: str, min_pool_size: int, max_pool_size: int, ssl: bool) -> Database:
@@ -46,8 +46,11 @@ class ServiceDatabase:
                         traceback:  TracebackType | None) -> None:
         await self.disconnect()
 
-    async def transaction(self) -> Transaction:
-        return await self.write_pool.transaction()
+    def connection(self) -> Connection:
+        return self.read_pool.connection()
+
+    def transaction(self) -> Transaction:
+        return self.write_pool.transaction()
 
     async def connect(self) -> None:
         await self.read_pool.connect()
