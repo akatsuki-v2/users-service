@@ -64,14 +64,6 @@ class AccountsRepo:
             "country": country,
             "status": status,
         }
-        row_id = await self.ctx.db.execute(query, params)
-
-        query = f"""\
-            SELECT {self.READ_PARAMS}
-              FROM accounts
-             WHERE account_id = :account_id
-        """
-        params = {"account_id": row_id}
         account = await self.ctx.db.fetch_one(query, params)
         return account
 
@@ -89,9 +81,8 @@ class AccountsRepo:
         return accounts
 
     async def partial_update(self, account_id: int, **updates: Any
-                             ) -> Mapping[str, Any] | None:
-        if not updates:
-            return None
+                             ) -> Mapping[str, Any]:
+        assert updates
 
         query = f"""\
             UPDATE accounts
@@ -101,16 +92,25 @@ class AccountsRepo:
         """
         params = {"account_id": account_id, **updates}
         account = await self.ctx.db.fetch_one(query, params)
+        assert account is not None
         return account
 
-    async def delete(self, account_id: int) -> Mapping[str, Any] | None:
+    async def delete(self, account_id: int) -> Mapping[str, Any]:
         query = f"""\
             UPDATE accounts
                SET status = 'deleted',
                    updated_at = CURRENT_TIMESTAMP
              WHERE account_id = :account_id
-         RETURNING {self.READ_PARAMS}
+        """
+        params = {"account_id": account_id}
+        await self.ctx.db.execute(query, params)
+
+        query = f"""\
+            SELECT {self.READ_PARAMS}
+              FROM accounts
+             WHERE account_id = :account_id
         """
         params = {"account_id": account_id}
         account = await self.ctx.db.fetch_one(query, params)
+        assert account is not None
         return account

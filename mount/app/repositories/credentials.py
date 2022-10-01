@@ -30,7 +30,6 @@ class CredentialsRepo:
                                      status)
                  VALUES (:credentials_id, :account_id, :identifier_type,
                          :identifier, :passphrase, :status)
-              RETURNING {self.READ_PARAMS}
         """
         params = {
             "credentials_id": credentials_id,
@@ -40,6 +39,15 @@ class CredentialsRepo:
             "passphrase": passphrase,
             "status": "active",
         }
+        rec_id = await self.ctx.db.execute(query, params)
+        assert rec_id is not None
+
+        query = f"""\
+            SELECT {self.READ_PARAMS}
+              FROM credentials
+             WHERE rec_id = :rec_id
+        """
+        params = {"rec_id": rec_id}
         credentials = await self.ctx.db.fetch_one(query, params)
         assert credentials is not None
         return credentials
@@ -76,7 +84,7 @@ class CredentialsRepo:
         all_credentials = await self.ctx.db.fetch_all(query, params)
         return all_credentials
 
-    async def partial_update(self, credentials_id: UUID, **updates: Any) -> Mapping[str, Any] | None:
+    async def partial_update(self, credentials_id: UUID, **updates: Any) -> Mapping[str, Any]:
         assert updates
 
         query = f"""\
@@ -84,20 +92,36 @@ class CredentialsRepo:
                SET {", ".join(f"{k} = :{k}" for k in updates)},
                    updated_at = CURRENT_TIMESTAMP
              WHERE credentials_id = :credentials_id
-         RETURNING {self.READ_PARAMS}
         """
         params = {"credentials_id": credentials_id, **updates}
+        await self.ctx.db.execute(query, params)
+
+        query = f"""\
+            SELECT {self.READ_PARAMS}
+              FROM credentials
+             WHERE credentials_id = :credentials_id
+        """
+        params = {"credentials_id": credentials_id}
         credentials = await self.ctx.db.fetch_one(query, params)
+        assert credentials is not None
         return credentials
 
-    async def delete(self, credentials_id: UUID) -> Mapping[str, Any] | None:
+    async def delete(self, credentials_id: UUID) -> Mapping[str, Any]:
         query = f"""\
             UPDATE credentials
                SET status = 'deleted',
                    updated_at = CURRENT_TIMESTAMP
              WHERE credentials_id = :credentials_id
-         RETURNING {self.READ_PARAMS}
+        """
+        params = {"credentials_id": credentials_id}
+        await self.ctx.db.execute(query, params)
+
+        query = f"""\
+            SELECT {self.READ_PARAMS}
+              FROM credentials
+             WHERE credentials_id = :credentials_id
         """
         params = {"credentials_id": credentials_id}
         credentials = await self.ctx.db.fetch_one(query, params)
+        assert credentials is not None
         return credentials

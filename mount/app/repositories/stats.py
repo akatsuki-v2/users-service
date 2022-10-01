@@ -47,7 +47,6 @@ class StatsRepo:
                          :performance, :play_count, :play_time, :accuracy,
                          :max_combo, :total_hits, :replay_views, :xh_count,
                          :x_count, :sh_count, :s_count, :a_count, :status)
-              RETURNING {self.READ_PARAMS}
         """
         params = {
             "account_id": account_id,
@@ -67,6 +66,18 @@ class StatsRepo:
             "s_count": s_count,
             "a_count": a_count,
             "status": status,
+        }
+        await self.ctx.db.execute(query, params)
+
+        query = f"""\
+            SELECT {self.READ_PARAMS}
+              FROM stats
+             WHERE account_id = :account_id
+               AND game_mode = :game_mode
+        """
+        params = {
+            "account_id": account_id,
+            "game_mode": game_mode,
         }
         stats = await self.ctx.db.fetch_one(query, params)
         assert stats is not None
@@ -112,14 +123,26 @@ class StatsRepo:
                    updated_at = CURRENT_TIMESTAMP
              WHERE account_id = :account_id
                AND game_mode = :game_mode
-         RETURNING {self.READ_PARAMS}
         """
         params = {
             "account_id": account_id,
             "game_mode": game_mode,
             **updates,
         }
+        await self.ctx.db.execute(query, params)
+
+        query = f"""\
+            SELECT {self.READ_PARAMS}
+              FROM stats
+             WHERE account_id = :account_id
+               AND game_mode = :game_mode
+        """
+        params = {
+            "account_id": account_id,
+            "game_mode": game_mode,
+        }
         stats = await self.ctx.db.fetch_one(query, params)
+        assert stats is not None
         return stats
 
     async def delete(self, account_id: int, game_mode: int) -> Mapping[str, Any] | None:
@@ -129,11 +152,23 @@ class StatsRepo:
                    updated_at = CURRENT_TIMESTAMP,
              WHERE account_id = :account_id
                AND game_mode = :game_mode
-         RETURNING {self.READ_PARAMS}
+        """
+        params = {
+            "account_id": account_id,
+            "game_mode": game_mode,
+        }
+        await self.ctx.db.execute(query, params)
+
+        query = f"""\
+            SELECT {self.READ_PARAMS}
+              FROM stats
+             WHERE account_id = :account_id
+               AND game_mode = :game_mode
         """
         params = {
             "account_id": account_id,
             "game_mode": game_mode,
         }
         stats = await self.ctx.db.fetch_one(query, params)
+        assert stats is not None
         return stats
