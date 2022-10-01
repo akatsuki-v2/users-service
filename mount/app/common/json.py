@@ -2,7 +2,6 @@ import uuid
 from typing import Any
 
 import orjson
-from asyncpg.pgproto import pgproto
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
@@ -14,7 +13,7 @@ def _default_processor(data: Any) -> Any:
         return {k: _default_processor(v) for k, v in data.items()}
     elif isinstance(data, list):
         return [_default_processor(v) for v in data]
-    elif isinstance(data, (uuid.UUID, pgproto.UUID)):
+    elif isinstance(data, uuid.UUID):
         return str(data)
     else:
         return data

@@ -1,5 +1,5 @@
 CREATE TABLE stats (
-    account_id INTEGER NOT NULL,
+    account_id INT NOT NULL,
     game_mode SMALLINT NOT NULL,
     total_score BIGINT NOT NULL,
     ranked_score BIGINT NOT NULL,
@@ -16,7 +16,7 @@ CREATE TABLE stats (
     s_count INT NOT NULL,
     a_count INT NOT NULL,
     status VARCHAR(64) NOT NULL,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at DATETIME NOT NULL DEFAULT NOW(),
+    updated_at DATETIME NOT NULL DEFAULT NOW(),
     PRIMARY KEY (account_id, game_mode)
 );

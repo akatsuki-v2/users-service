@@ -1,5 +1,5 @@
 aioredis
-asyncpg
+aiomysql
 bcrypt
 databases==0.5.5
 email-validator

@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import Any
 from typing import Mapping
-from uuid import UUID
 
 from app.common.context import Context
 from app.models import Status
@@ -25,7 +24,6 @@ class AccountsRepo:
         query = f"""\
             INSERT INTO accounts (username, email_address, country, status)
                  VALUES (:username, :email_address, :country, :status)
-              RETURNING {self.READ_PARAMS}
         """
         params = {
             "username": username,
@@ -33,6 +31,14 @@ class AccountsRepo:
             "country": country,
             "status": status,
         }
+        row_id = await self.ctx.db.execute(query, params)
+
+        query = f"""\
+            SELECT {self.READ_PARAMS}
+              FROM accounts
+             WHERE account_id = :account_id
+        """
+        params = {"account_id": row_id}
         account = await self.ctx.db.fetch_one(query, params)
         assert account is not None
         return account
@@ -58,6 +64,14 @@ class AccountsRepo:
             "country": country,
             "status": status,
         }
+        row_id = await self.ctx.db.execute(query, params)
+
+        query = f"""\
+            SELECT {self.READ_PARAMS}
+              FROM accounts
+             WHERE account_id = :account_id
+        """
+        params = {"account_id": row_id}
         account = await self.ctx.db.fetch_one(query, params)
         return account
 
@@ -84,7 +98,6 @@ class AccountsRepo:
                SET {", ".join(f"{k} = :{k}" for k in updates)},
                    updated_at = CURRENT_TIMESTAMP
              WHERE account_id = :account_id
-         RETURNING {self.READ_PARAMS}
         """
         params = {"account_id": account_id, **updates}
         account = await self.ctx.db.fetch_one(query, params)
