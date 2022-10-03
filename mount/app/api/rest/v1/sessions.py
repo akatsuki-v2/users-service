@@ -41,6 +41,25 @@ async def log_out(session_id: UUID, ctx: RequestContext = Depends()):
     return responses.success(resp)
 
 
+@router.get("/v1/sessions/{session_id}", response_model=Success[Session])
+async def fetch_one(session_id: UUID, ctx: RequestContext = Depends()):
+    data = await sessions.fetch_one(ctx, session_id)
+    if isinstance(data, ServiceError):
+        return responses.failure(data, "Failed to fetch session")
+
+    resp = Session.from_mapping(data)
+    return responses.success(resp)
+
+
+@router.get("/v1/sessions", response_model=Success[BaseModel])
+async def fetch_all(ctx: RequestContext = Depends()):
+    data = await sessions.fetch_all(ctx)
+    if isinstance(data, ServiceError):
+        return responses.failure(data, "Failed to fetch sessions")
+
+    return responses.success(data)
+
+
 # https://osuakatsuki.atlassian.net/browse/V2-12
 @router.patch("/v1/sessions/{session_id}", response_model=Success[Session])
 async def partial_update_session(session_id: UUID, args: SessionUpdate,

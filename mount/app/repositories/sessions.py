@@ -45,7 +45,14 @@ class SessionsRepo:
             return None
         return json.loads(session)
 
-    # TODO: fetch all? (with filters)
+    # TODO: filters?
+    async def fetch_all(self) -> list[Mapping[str, Any]]:
+        session_keys = await self.ctx.redis.keys("users:sessions:*")
+        if not session_keys:
+            return []
+
+        sessions = await self.ctx.redis.mget(*session_keys)
+        return [json.loads(session) for session in sessions]
 
     async def partial_update(self, session_id: UUID, **kwargs: Any) -> Mapping[str, Any] | None:
         session = await self.fetch_one(session_id)

@@ -57,6 +57,23 @@ async def log_out(ctx: Context, session_id: UUID) -> Mapping[str, Any] | Service
     return session
 
 
+async def fetch_one(ctx: Context, session_id: UUID) -> Mapping[str, Any] | ServiceError:
+    repo = SessionsRepo(ctx)
+
+    session = await repo.fetch_one(session_id)
+    if session is None:
+        return ServiceError.SESSIONS_NOT_FOUND
+
+    return session
+
+
+async def fetch_all(ctx: Context) -> list[Mapping[str, Any]]:
+    repo = SessionsRepo(ctx)
+
+    sessions = await repo.fetch_all()
+    return sessions
+
+
 async def partial_update(ctx: Context,
                          session_id: UUID,
                          **kwargs: Any | None) -> Mapping[str, Any] | ServiceError:
