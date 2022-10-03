@@ -49,11 +49,10 @@ async def log_in(ctx: Context,
 async def log_out(ctx: Context, session_id: UUID) -> Mapping[str, Any] | ServiceError:
     repo = SessionsRepo(ctx)
 
-    session = await repo.fetch_one(session_id)
+    session = await repo.delete(session_id)
     if session is None:
         return ServiceError.SESSIONS_NOT_FOUND
 
-    await repo.delete(session_id)
     return session
 
 
