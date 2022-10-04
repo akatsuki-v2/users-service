@@ -17,7 +17,8 @@ router = APIRouter()
 
 @router.post("/v1/sessions/{session_id}/queued-packets",
              response_model=Success[QueuedPacket])
-async def enqueue_data(session_id: UUID, args: EnqueuePacket, ctx: RequestContext = Depends()):
+async def enqueue(session_id: UUID, args: EnqueuePacket,
+                  ctx: RequestContext = Depends()):
     data = await queued_packets.enqueue(ctx, session_id, data=args.data)
     if isinstance(data, ServiceError):
         return responses.failure(data, "Failed to enqueue packet")

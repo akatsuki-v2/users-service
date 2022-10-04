@@ -79,9 +79,9 @@ async def partial_update(ctx: Context,
     repo = SessionsRepo(ctx)
 
     updates = {
-        field: value
+        field: kwargs[field]
         for field in SessionUpdate.__fields__
-        if (value := kwargs.get(field)) is not None
+        if field in kwargs
     }
 
     session = await repo.partial_update(session_id, **updates)

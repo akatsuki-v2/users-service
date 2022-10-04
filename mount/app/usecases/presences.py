@@ -90,9 +90,9 @@ async def partial_update(ctx: Context, session_id: UUID, **kwargs: Any | None
     repo = PresencesRepo(ctx)
 
     updates = {
-        field: value
+        field: kwargs[field]
         for field in PresenceUpdate.__fields__
-        if (value := kwargs.get(field)) is not None
+        if field in kwargs
     }
 
     presence = await repo.partial_update(session_id=session_id, **updates)
