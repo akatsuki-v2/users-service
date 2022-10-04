@@ -21,6 +21,8 @@ async def create_presence(args: PresenceInput,
                           ctx: RequestContext = Depends()):
     data = await presences.create(ctx, session_id=args.session_id,
                                   game_mode=args.game_mode,
+                                  account_id=args.account_id,
+                                  username=args.username,
                                   country_code=args.country_code,
                                   privileges=args.privileges,
                                   latitude=args.latitude,

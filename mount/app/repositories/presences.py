@@ -19,9 +19,10 @@ class PresencesRepo:
 
     async def create(self,
                      session_id: UUID,
-                     #  account_id: int,
                      game_mode: int,
-                     country_code: str,
+                     account_id: int,
+                     username: str,
+                     country_code: int,
                      privileges: int,
                      latitude: float,
                      longitude: float,
@@ -38,8 +39,9 @@ class PresencesRepo:
         now = datetime.now()
         session = {
             "session_id": session_id,
-            # "account_id": account_id,
             "game_mode": game_mode,
+            "account_id": account_id,
+            "username": username,
             "country_code": country_code,
             "privileges": privileges,
             "latitude": latitude,

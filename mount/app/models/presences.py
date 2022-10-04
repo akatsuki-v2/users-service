@@ -24,7 +24,9 @@ class Action(IntEnum):
 class Presence(BaseModel):
     session_id: UUID
     game_mode: int
-    country_code: str
+    account_id: int
+    username: str
+    country_code: int  # TODO: is the number an osu-specific thing? should we use iso3166?
     privileges: int
     latitude: float
     longitude: float
@@ -43,7 +45,9 @@ class Presence(BaseModel):
 class PresenceInput(BaseModel):
     session_id: UUID
     game_mode: int
-    country_code: str
+    account_id: int
+    username: str
+    country_code: int
     privileges: int
     latitude: float
     longitude: float
@@ -61,7 +65,8 @@ class PresenceInput(BaseModel):
 
 class PresenceUpdate(BaseModel):
     game_mode: int | None
-    country_code: str | None
+    username: str
+    country_code: int | None
     privileges: int | None
     latitude: float | None
     longitude: float | None
