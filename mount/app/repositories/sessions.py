@@ -12,7 +12,7 @@ from app.common.context import Context
 SESSION_EXPIRY = 3600  # 1h
 
 
-def create_session_key(session_id: UUID) -> str:
+def create_session_key(session_id: str | UUID) -> str:
     return f"users:sessions:{session_id}"
 
 # TODO: is my usage of setex correct?
@@ -47,7 +47,7 @@ class SessionsRepo:
 
     # TODO: filters?
     async def fetch_all(self) -> list[Mapping[str, Any]]:
-        session_keys = await self.ctx.redis.keys("users:sessions:*")
+        session_keys = await self.ctx.redis.keys(create_session_key("*"))
         if not session_keys:
             return []
 

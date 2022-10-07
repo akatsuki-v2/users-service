@@ -9,8 +9,8 @@ from app.common import json
 from app.common.context import Context
 
 
-def create_presence_key(session_id: UUID) -> str:
-    return f"users:sessions:{session_id}:presence"
+def create_presence_key(session_id: str | UUID) -> str:
+    return f"users:presences:{session_id}"
 
 
 class PresencesRepo:
@@ -73,7 +73,7 @@ class PresencesRepo:
         return json.loads(session)
 
     async def fetch_all(self) -> list[Mapping[str, Any]]:
-        keys = await self.ctx.redis.keys("users:sessions:*:presence")
+        keys = await self.ctx.redis.keys(create_presence_key("*"))
         sessions = await self.ctx.redis.mget(*keys)
         return [json.loads(session) for session in sessions]
 
