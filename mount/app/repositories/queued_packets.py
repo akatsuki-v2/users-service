@@ -8,8 +8,8 @@ from app.common import json
 from app.common.context import Context
 
 
-def create_queued_packets_key(session_id: UUID) -> str:
-    return f"users:sessions:{session_id}:queued-packets"
+def create_queued_packets_key(session_id: str | UUID) -> str:
+    return f"users:queued-packets:{session_id}"
 
 
 # TODO: packet expiry?
