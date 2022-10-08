@@ -99,10 +99,12 @@ class PresencesRepo:
         return presence
 
     async def delete(self, session_id: UUID) -> Mapping[str, Any] | None:
-        session = await self.fetch_one(session_id)
+        presence_key = create_presence_key(session_id)
+
+        session = await self.ctx.redis.get(presence_key)
         if session is None:
             return None
 
-        await self.ctx.redis.delete(create_presence_key(session_id))
+        await self.ctx.redis.delete(presence_key)
 
-        return session
+        return json.loads(session)
