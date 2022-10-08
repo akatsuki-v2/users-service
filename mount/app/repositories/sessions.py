@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from datetime import timedelta
 from typing import Any
+from typing import Literal
 from typing import Mapping
 from uuid import UUID
 
@@ -12,7 +13,7 @@ from app.common.context import Context
 SESSION_EXPIRY = 3600  # 1h
 
 
-def create_session_key(session_id: str | UUID) -> str:
+def create_session_key(session_id: UUID | Literal['*']) -> str:
     return f"users:sessions:{session_id}"
 
 # TODO: is my usage of setex correct?

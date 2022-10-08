@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from typing import Any
+from typing import Literal
 from typing import Mapping
 from uuid import UUID
 
@@ -9,7 +10,7 @@ from app.common import json
 from app.common.context import Context
 
 
-def create_presence_key(session_id: str | UUID) -> str:
+def create_presence_key(session_id: UUID | Literal['*']) -> str:
     return f"users:presences:{session_id}"
 
 
