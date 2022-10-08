@@ -47,4 +47,4 @@ class QueuedPacketsRepo:
 
         await self.ctx.redis.delete(create_queued_packets_key(session_id))
 
-        return data
+        return [json.loads(packet) for packet in data]
