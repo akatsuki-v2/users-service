@@ -6,7 +6,8 @@ from app.common.errors import ServiceError
 from app.repositories.queued_packets import QueuedPacketsRepo
 
 
-async def enqueue(ctx: Context, session_id: UUID, data: bytes) -> dict[str, Any] | ServiceError:
+async def enqueue(ctx: Context, session_id: UUID, data: list[int]
+                  ) -> dict[str, Any] | ServiceError:
     repo = QueuedPacketsRepo(ctx)
 
     packet = await repo.enqueue(session_id, data)

@@ -6,11 +6,10 @@ from app.models import BaseModel
 
 # input models
 class EnqueuePacket(BaseModel):
-    data: bytes
+    data: list[int]
 
 
 # output models
 class QueuedPacket(BaseModel):
-    session_id: UUID
-    data: str
+    data: list[int]
     created_at: datetime

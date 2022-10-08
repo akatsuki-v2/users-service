@@ -5,6 +5,7 @@ from typing import Any
 from uuid import UUID
 
 from app.common import json
+from app.common import logging
 from app.common.context import Context
 
 
@@ -17,11 +18,10 @@ class QueuedPacketsRepo:
     def __init__(self, ctx: Context) -> None:
         self.ctx = ctx
 
-    async def enqueue(self, session_id: UUID, data: bytes) -> dict[str, Any]:
+    async def enqueue(self, session_id: UUID, data: list[int]) -> dict[str, Any]:
         now = datetime.now()
         packet = {
-            "session_id": session_id,  # overkill?
-            "data": list(data),
+            "data": data,
             "created_at": now,
         }
         queue_size = await self.ctx.redis.rpush(create_queued_packets_key(session_id),

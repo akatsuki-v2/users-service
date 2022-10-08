@@ -51,7 +51,7 @@ class SessionsRepo:
         if not session_keys:
             return []
 
-        sessions = await self.ctx.redis.mget(*session_keys)
+        sessions = await self.ctx.redis.mget(session_keys)
         return [json.loads(session) for session in sessions]
 
     async def partial_update(self, session_id: UUID, **kwargs: Any) -> Mapping[str, Any] | None:
