@@ -80,7 +80,6 @@ class SessionsRepo:
         if session is None:
             return None
 
-        # TODO: should we be actually deleting?
         await self.ctx.redis.delete(session_key)
 
-        return session
+        return json.loads(session)
