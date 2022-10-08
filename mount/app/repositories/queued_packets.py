@@ -26,6 +26,10 @@ class QueuedPacketsRepo:
         }
         queue_size = await self.ctx.redis.rpush(create_queued_packets_key(session_id),
                                                 json.dumps(packet))
+        if queue_size > 20:
+            logging.warning(f"Packet queue size exceeded 20 packets ({queue_size})",
+                            session_id=session_id)
+
         return packet
 
     async def dequeue_one(self, session_id: UUID) -> dict[str, Any] | None:
