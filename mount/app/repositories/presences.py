@@ -86,8 +86,73 @@ class PresencesRepo:
         if not kwargs:
             return presence
 
+        updates = {}
+
+        new_game_mode = kwargs.get("game_mode")
+        if new_game_mode is not None and new_game_mode != presence["game_mode"]:
+            updates["game_mode"] = new_game_mode
+
+        new_username = kwargs.get("username")
+        if new_username is not None and new_username != presence["username"]:
+            updates["username"] = new_username
+
+        new_country_code = kwargs.get("country_code")
+        if new_country_code is not None and new_country_code != presence["country_code"]:
+            updates["country_code"] = new_country_code
+
+        new_privileges = kwargs.get("privileges")
+        if new_privileges is not None and new_privileges != presence["privileges"]:
+            updates["privileges"] = new_privileges
+
+        new_latitude = kwargs.get("latitude")
+        if new_latitude is not None and new_latitude != presence["latitude"]:
+            updates["latitude"] = new_latitude
+
+        new_longitude = kwargs.get("longitude")
+        if new_longitude is not None and new_longitude != presence["longitude"]:
+            updates["longitude"] = new_longitude
+
+        new_action = kwargs.get("action")
+        if new_action is not None and new_action != presence["action"]:
+            updates["action"] = new_action
+
+        new_info_text = kwargs.get("info_text")
+        if new_info_text is not None and new_info_text != presence["info_text"]:
+            updates["info_text"] = new_info_text
+
+        new_map_md5 = kwargs.get("map_md5")
+        if new_map_md5 is not None and new_map_md5 != presence["map_md5"]:
+            updates["map_md5"] = new_map_md5
+
+        new_map_id = kwargs.get("map_id")
+        if new_map_id is not None and new_map_id != presence["map_id"]:
+            updates["map_id"] = new_map_id
+
+        new_mods = kwargs.get("mods")
+        if new_mods is not None and new_mods != presence["mods"]:
+            updates["mods"] = new_mods
+
+        new_osu_version = kwargs.get("osu_version")
+        if new_osu_version is not None and new_osu_version != presence["osu_version"]:
+            updates["osu_version"] = new_osu_version
+
+        new_utc_offset = kwargs.get("utc_offset")
+        if new_utc_offset is not None and new_utc_offset != presence["utc_offset"]:
+            updates["utc_offset"] = new_utc_offset
+
+        new_display_city = kwargs.get("display_city")
+        if new_display_city is not None and new_display_city != presence["display_city"]:
+            updates["display_city"] = new_display_city
+
+        new_pm_private = kwargs.get("pm_private")
+        if new_pm_private is not None and new_pm_private != presence["pm_private"]:
+            updates["pm_private"] = new_pm_private
+
+        if not updates:
+            return presence
+
         presence = dict(presence)
-        presence.update(kwargs)
+        presence.update(updates)
         presence["updated_at"] = datetime.now()
 
         await self.ctx.redis.set(create_presence_key(session_id),
