@@ -65,7 +65,7 @@ class PresenceInput(BaseModel):
 
 class PresenceUpdate(BaseModel):
     game_mode: int | None
-    username: str
+    username: str | None
     country_code: int | None
     privileges: int | None
     latitude: float | None
