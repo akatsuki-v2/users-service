@@ -66,10 +66,13 @@ async def fetch_one(ctx: Context, session_id: UUID) -> Mapping[str, Any] | Servi
     return session
 
 
-async def fetch_all(ctx: Context) -> list[Mapping[str, Any]]:
+async def fetch_all(ctx: Context, account_id: int | None = None,
+                    user_agent: str | None = None
+                    ) -> list[Mapping[str, Any]]:
     repo = SessionsRepo(ctx)
 
-    sessions = await repo.fetch_all()
+    sessions = await repo.fetch_all(account_id=account_id,
+                                    user_agent=user_agent)
     return sessions
 
 

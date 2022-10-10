@@ -77,10 +77,30 @@ async def fetch_one(ctx: Context, session_id: UUID) -> Mapping[str, Any] | Servi
     return presence
 
 
-async def fetch_all(ctx: Context) -> list[Mapping[str, Any]]:
+async def fetch_all(ctx: Context,
+                    game_mode: int | None = None,
+                    account_id: int | None = None,
+                    username: str | None = None,
+                    country_code: str | None = None,
+                    # privileges: int | None = None,
+
+                    osu_version: str | None = None,
+                    utc_offset: int | None = None,
+                    display_city: bool | None = None,
+                    pm_private: bool | None = None,
+                    ) -> list[Mapping[str, Any]]:
     repo = PresencesRepo(ctx)
 
-    presences = await repo.fetch_all()
+    presences = await repo.fetch_all(game_mode=game_mode,
+                                     account_id=account_id,
+                                     username=username,
+                                     country_code=country_code,
+                                     # privileges=privileges,
+
+                                     osu_version=osu_version,
+                                     utc_offset=utc_offset,
+                                     display_city=display_city,
+                                     pm_private=pm_private)
 
     return presences
 

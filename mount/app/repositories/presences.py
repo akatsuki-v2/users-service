@@ -73,10 +73,58 @@ class PresencesRepo:
             return None
         return json.loads(session)
 
-    async def fetch_all(self) -> list[Mapping[str, Any]]:
-        keys = await self.ctx.redis.keys(create_presence_key("*"))
-        sessions = await self.ctx.redis.mget(keys)
-        return [json.loads(session) for session in sessions]
+    async def fetch_all(self,
+                        game_mode: int | None = None,
+                        account_id: int | None = None,
+                        username: str | None = None,
+                        country_code: str | None = None,
+                        # privileges: int | None = None,
+
+                        osu_version: str | None = None,
+                        utc_offset: int | None = None,
+                        display_city: bool | None = None,
+                        pm_private: bool | None = None,
+                        ) -> list[Mapping[str, Any]]:
+        presence_keys = await self.ctx.redis.keys(create_presence_key("*"))
+        if not presence_keys:
+            return []
+
+        raw_presences = await self.ctx.redis.mget(presence_keys)
+
+        presences = []
+        for raw_presence in raw_presences:
+            presence = json.loads(raw_presence)
+
+            if game_mode is not None and presence["game_mode"] != game_mode:
+                continue
+
+            if account_id is not None and presence["account_id"] != account_id:
+                continue
+
+            if username is not None and presence["username"] != username:
+                continue
+
+            if country_code is not None and presence["country_code"] != country_code:
+                continue
+
+            # if privileges is not None and presence["privileges"] != privileges:
+            #     continue
+
+            if osu_version is not None and presence["osu_version"] != osu_version:
+                continue
+
+            if utc_offset is not None and presence["utc_offset"] != utc_offset:
+                continue
+
+            if display_city is not None and presence["display_city"] != display_city:
+                continue
+
+            if pm_private is not None and presence["pm_private"] != pm_private:
+                continue
+
+            presences.append(presence)
+
+        return presences
 
     async def partial_update(self, session_id: UUID, **kwargs: Any) -> Mapping[str, Any] | None:
         presence = await self.fetch_one(session_id)

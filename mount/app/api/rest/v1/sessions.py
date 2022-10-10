@@ -51,9 +51,12 @@ async def fetch_one(session_id: UUID, ctx: RequestContext = Depends()):
     return responses.success(resp)
 
 
-@router.get("/v1/sessions", response_model=Success[BaseModel])
-async def fetch_all(ctx: RequestContext = Depends()):
-    data = await sessions.fetch_all(ctx)
+@router.get("/v1/sessions", response_model=Success[Session])
+async def fetch_all(account_id: int | None = None,
+                    user_agent: str | None = None,
+                    ctx: RequestContext = Depends()):
+    data = await sessions.fetch_all(ctx, account_id=account_id,
+                                    user_agent=user_agent)
     if isinstance(data, ServiceError):
         return responses.failure(data, "Failed to fetch sessions")
 

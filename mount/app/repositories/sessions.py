@@ -46,14 +46,27 @@ class SessionsRepo:
             return None
         return json.loads(session)
 
-    # TODO: filters?
-    async def fetch_all(self) -> list[Mapping[str, Any]]:
+    async def fetch_all(self, account_id: int | None = None,
+                        user_agent: str | None = None
+                        ) -> list[Mapping[str, Any]]:
         session_keys = await self.ctx.redis.keys(create_session_key("*"))
         if not session_keys:
             return []
 
-        sessions = await self.ctx.redis.mget(session_keys)
-        return [json.loads(session) for session in sessions]
+        raw_sessions = await self.ctx.redis.mget(session_keys)
+
+        sessions = []
+        for raw_session in raw_sessions:
+            session = json.loads(raw_session)
+            if account_id is not None and session["account_id"] != account_id:
+                continue
+
+            if user_agent is not None and session["user_agent"] != user_agent:
+                continue
+
+            sessions.append(session)
+
+        return sessions
 
     async def partial_update(self, session_id: UUID, **kwargs: Any) -> Mapping[str, Any] | None:
         session = await self.fetch_one(session_id)
