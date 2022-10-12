@@ -47,31 +47,46 @@ class SessionsRepo:
         return json.loads(session)
 
     async def fetch_all(self, account_id: int | None = None,
-                        user_agent: str | None = None
+                        user_agent: str | None = None,
+                        page: int = 1, page_size: int = 10
                         ) -> list[Mapping[str, Any]]:
-        session_keys = await self.ctx.redis.keys(create_session_key("*"))
-        if not session_keys:
-            return []
+        session_key = create_session_key("*")
 
-        raw_sessions = await self.ctx.redis.mget(session_keys)
+        if page > 1:
+            cursor, data = await self.ctx.redis.scan(cursor=0,
+                                                     match=session_key,
+                                                     count=(page - 1) * page_size)
+        else:
+            cursor = None
 
         sessions = []
-        for raw_session in raw_sessions:
-            session = json.loads(raw_session)
-            if account_id is not None and session["account_id"] != account_id:
-                continue
+        while cursor != 0:
+            cursor, data = await self.ctx.redis.scan(cursor=cursor or 0,
+                                                     match=session_key,
+                                                     count=page_size)
 
-            if user_agent is not None and session["user_agent"] != user_agent:
-                continue
+            for datum in data:
+                session = await self.ctx.redis.get(datum)
+                assert session is not None
 
-            sessions.append(session)
+                session = json.loads(session)
+
+                if account_id is not None and session["account_id"] != account_id:
+                    continue
+
+                if user_agent is not None and session["user_agent"] != user_agent:
+                    continue
+
+                sessions.append(session)
 
         return sessions
 
     async def partial_update(self, session_id: UUID, **kwargs: Any) -> Mapping[str, Any] | None:
-        session = await self.fetch_one(session_id)
-        if session is None:
+        raw_session = await self.ctx.redis.get(create_session_key(session_id))
+        if raw_session is None:
             return None
+
+        session = json.loads(raw_session)
 
         if not kwargs:
             return session

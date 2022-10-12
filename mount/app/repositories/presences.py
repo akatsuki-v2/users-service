@@ -68,10 +68,10 @@ class PresencesRepo:
         return session
 
     async def fetch_one(self, session_id: UUID) -> Mapping[str, Any] | None:
-        session = await self.ctx.redis.get(create_presence_key(session_id))
-        if session is None:
+        presence = await self.ctx.redis.get(create_presence_key(session_id))
+        if presence is None:
             return None
-        return json.loads(session)
+        return json.loads(presence)
 
     async def fetch_all(self,
                         game_mode: int | None = None,
@@ -84,50 +84,64 @@ class PresencesRepo:
                         utc_offset: int | None = None,
                         display_city: bool | None = None,
                         pm_private: bool | None = None,
+                        page: int = 1, page_size: int = 10,
                         ) -> list[Mapping[str, Any]]:
-        presence_keys = await self.ctx.redis.keys(create_presence_key("*"))
-        if not presence_keys:
-            return []
+        presence_key = create_presence_key("*")
 
-        raw_presences = await self.ctx.redis.mget(presence_keys)
+        if page > 1:
+            cursor, data = await self.ctx.redis.scan(cursor=0,
+                                                     match=presence_key,
+                                                     count=(page - 1) * page_size)
+        else:
+            cursor = None
 
         presences = []
-        for raw_presence in raw_presences:
-            presence = json.loads(raw_presence)
+        while cursor != 0:
+            cursor, data = await self.ctx.redis.scan(cursor=cursor or 0,
+                                                     match=presence_key,
+                                                     count=page_size)
 
-            if game_mode is not None and presence["game_mode"] != game_mode:
-                continue
+            for datum in data:
+                presence = json.loads(datum)
 
-            if account_id is not None and presence["account_id"] != account_id:
-                continue
+                if game_mode is not None and presence["game_mode"] != game_mode:
+                    continue
 
-            if username is not None and presence["username"] != username:
-                continue
+                if account_id is not None and presence["account_id"] != account_id:
+                    continue
 
-            if country_code is not None and presence["country_code"] != country_code:
-                continue
+                if username is not None and presence["username"] != username:
+                    continue
 
-            # if privileges is not None and presence["privileges"] != privileges:
-            #     continue
+                if country_code is not None and presence["country_code"] != country_code:
+                    continue
 
-            if osu_version is not None and presence["osu_version"] != osu_version:
-                continue
+                # if privileges is not None and presence["privileges"] != privileges:
+                #     continue
 
-            if utc_offset is not None and presence["utc_offset"] != utc_offset:
-                continue
+                if osu_version is not None and presence["osu_version"] != osu_version:
+                    continue
 
-            if display_city is not None and presence["display_city"] != display_city:
-                continue
+                if utc_offset is not None and presence["utc_offset"] != utc_offset:
+                    continue
 
-            if pm_private is not None and presence["pm_private"] != pm_private:
-                continue
+                if display_city is not None and presence["display_city"] != display_city:
+                    continue
 
-            presences.append(presence)
+                if pm_private is not None and presence["pm_private"] != pm_private:
+                    continue
+
+                presences.append(presence)
 
         return presences
 
     async def partial_update(self, session_id: UUID, **kwargs: Any) -> Mapping[str, Any] | None:
-        presence = await self.fetch_one(session_id)
+        raw_presence = await self.ctx.redis.get(create_presence_key(session_id))
+        if raw_presence is None:
+            return None
+
+        presence = json.loads(raw_presence)
+
         if presence is None:
             return None
 
