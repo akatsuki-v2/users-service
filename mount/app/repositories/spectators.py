@@ -15,6 +15,7 @@ class SpectatorsRepo:
         await self.ctx.redis.sadd(create_spectator_key(host_session_id),
                                   str(spectator_session_id))
 
+    # TODO: make sure it's possible to *actually* fetch *all* spectators easily
     async def fetch_all(self, host_session_id: UUID,
                         page: int = 1, page_size: int = 10) -> list[str]:
         spectator_key = create_spectator_key(host_session_id)
