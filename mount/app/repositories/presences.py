@@ -89,7 +89,7 @@ class PresencesRepo:
         presence_key = create_presence_key("*")
 
         if page > 1:
-            cursor, data = await self.ctx.redis.scan(cursor=0,
+            cursor, keys = await self.ctx.redis.scan(cursor=0,
                                                      match=presence_key,
                                                      count=(page - 1) * page_size)
         else:
@@ -97,12 +97,14 @@ class PresencesRepo:
 
         presences = []
         while cursor != 0:
-            cursor, data = await self.ctx.redis.scan(cursor=cursor or 0,
+            cursor, keys = await self.ctx.redis.scan(cursor=cursor or 0,
                                                      match=presence_key,
                                                      count=page_size)
 
-            for datum in data:
-                presence = json.loads(datum)
+            raw_presences = await self.ctx.redis.mget(keys)
+
+            for raw_presence in raw_presences:
+                presence: dict[str, Any] = json.loads(raw_presence)
 
                 if game_mode is not None and presence["game_mode"] != game_mode:
                     continue
@@ -135,7 +137,7 @@ class PresencesRepo:
 
         return presences
 
-    async def partial_update(self, session_id: UUID, **kwargs: Any) -> Mapping[str, Any] | None:
+    async def partial_update(self, session_id: UUID, **kwargs: Any) -> dict[str, Any] | None:
         raw_presence = await self.ctx.redis.get(create_presence_key(session_id))
         if raw_presence is None:
             return None

@@ -53,7 +53,7 @@ class SessionsRepo:
         session_key = create_session_key("*")
 
         if page > 1:
-            cursor, data = await self.ctx.redis.scan(cursor=0,
+            cursor, keys = await self.ctx.redis.scan(cursor=0,
                                                      match=session_key,
                                                      count=(page - 1) * page_size)
         else:
@@ -61,15 +61,13 @@ class SessionsRepo:
 
         sessions = []
         while cursor != 0:
-            cursor, data = await self.ctx.redis.scan(cursor=cursor or 0,
+            cursor, keys = await self.ctx.redis.scan(cursor=cursor or 0,
                                                      match=session_key,
                                                      count=page_size)
 
-            for datum in data:
-                session = await self.ctx.redis.get(datum)
-                assert session is not None
-
-                session = json.loads(session)
+            raw_sessions = await self.ctx.redis.mget(keys)
+            for raw_session in raw_sessions:
+                session = json.loads(raw_session)
 
                 if account_id is not None and session["account_id"] != account_id:
                     continue
