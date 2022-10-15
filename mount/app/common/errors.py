@@ -31,4 +31,9 @@ class ServiceError(str, Enum):
     PRESENCES_CANNOT_CREATE = 'presences.cannot_create'
     PRESENCES_NOT_FOUND = 'presences.not_found'
 
+    SPECTATORS_CANNOT_CREATE = 'spectators.cannot_create'
+    SPECTATORS_CANNOT_DELETE = 'spectators.cannot_delete'
+    SPECTATORS_NOT_FOUND = 'spectators.not_found'
+    SPECTATOR_HOST_NOT_FOUND = 'spectator_host.not_found'
+
     QUEUED_PACKETS_NONE_REMAINING = 'queued_packets.none_remaining'
