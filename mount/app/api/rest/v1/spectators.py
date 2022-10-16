@@ -42,7 +42,7 @@ async def delete(host_session_id: UUID, spectator_session_id: UUID,
 
 
 @router.get("/v1/sessions/{host_session_id}/spectators",
-            response_model=Success[list[str]])
+            response_model=Success[list[Spectator]])
 async def fetch_all(host_session_id: UUID, ctx: RequestContext = Depends()):
     data = await spectators.fetch_all(ctx, host_session_id)
     if isinstance(data, ServiceError):
