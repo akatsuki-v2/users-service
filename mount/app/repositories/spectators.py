@@ -34,7 +34,7 @@ class SpectatorsRepo:
 
     # TODO: make sure it's possible to *actually* fetch *all* spectators easily
     async def fetch_all(self, host_session_id: UUID,
-                        session_id: UUID | None = None,
+                        session_id: str | None = None,
                         account_id: int | None = None,
                         page: int = 1, page_size: int = 10) -> list[dict[str, Any]]:
         spectator_key = create_spectator_key(host_session_id)
@@ -76,7 +76,7 @@ class SpectatorsRepo:
                      ) -> dict[str, Any] | None:
         # TODO: this is pretty hacky/wrong
         spectators = await self.fetch_all(host_session_id,
-                                          session_id=spectator_session_id)
+                                          session_id=str(spectator_session_id))
         if len(spectators) == 0:
             return None
 
