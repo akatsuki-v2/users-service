@@ -6,12 +6,12 @@ from datetime import datetime
 from typing import Any
 from uuid import UUID
 
-from app.common import logging
 from app.common.context import Context
 from app.common.errors import ServiceError
 from app.models.presences import PresenceUpdate
 from app.repositories.presences import PresencesRepo
 from app.repositories.sessions import SessionsRepo
+from shared_modules import logger
 
 
 async def create(ctx: Context,
@@ -60,8 +60,8 @@ async def create(ctx: Context,
                                        pm_private=pm_private,
                                        expires_at=expires_at)
     except Exception as exc:
-        logging.error("Unable to create presence:", error=exc)
-        logging.error("Stack trace: ", error=traceback.format_exc())
+        logger.error("Unable to create presence:", error=exc)
+        logger.error("Stack trace: ", error=traceback.format_exc())
         return ServiceError.PRESENCES_CANNOT_CREATE
 
     return presence

@@ -6,13 +6,13 @@ from typing import Any
 from uuid import UUID
 from uuid import uuid4
 
-from app.common import logging
 from app.common import security
 from app.common.context import Context
 from app.common.errors import ServiceError
 from app.models.sessions import SessionUpdate
 from app.repositories.credentials import CredentialsRepo
 from app.repositories.sessions import SessionsRepo
+from shared_modules import logger
 
 
 async def log_in(ctx: Context,
@@ -39,8 +39,8 @@ async def log_in(ctx: Context,
                                       account_id=account_id,
                                       user_agent=user_agent)
     except Exception as exc:
-        logging.error("Unable to create session:", error=exc)
-        logging.error("Stack trace: ", error=traceback.format_exc())
+        logger.error("Unable to create session:", error=exc)
+        logger.error("Stack trace: ", error=traceback.format_exc())
         return ServiceError.SESSIONS_CANNOT_CREATE
 
     return session

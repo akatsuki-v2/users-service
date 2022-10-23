@@ -6,8 +6,8 @@ from typing import Literal
 from uuid import UUID
 
 from app.common import json
-from app.common import logging
 from app.common.context import Context
+from shared_modules import logger
 
 
 def create_queued_packets_key(session_id: UUID | Literal['*']) -> str:
@@ -28,8 +28,8 @@ class QueuedPacketsRepo:
         queue_size = await self.ctx.redis.rpush(create_queued_packets_key(session_id),
                                                 json.dumps(packet))
         if queue_size > 20:
-            logging.warning(f"Packet queue size exceeded 20 packets ({queue_size})",
-                            session_id=session_id)
+            logger.warning(f"Packet queue size exceeded 20 packets ({queue_size})",
+                           session_id=session_id)
 
         return packet
 

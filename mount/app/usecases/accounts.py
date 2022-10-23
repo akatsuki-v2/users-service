@@ -5,7 +5,6 @@ from collections.abc import Mapping
 from typing import Any
 from uuid import uuid4
 
-from app.common import logging
 from app.common import security
 from app.common import validation
 from app.common.context import Context
@@ -14,6 +13,7 @@ from app.models import Status
 from app.repositories.accounts import AccountsRepo
 from app.repositories.credentials import CredentialsRepo
 from app.repositories.stats import StatsRepo
+from shared_modules import logger
 
 
 async def sign_up(ctx: Context,
@@ -89,8 +89,8 @@ async def sign_up(ctx: Context,
 
     except Exception as exc:  # pragma: no cover
         await transaction.rollback()
-        logging.error("Unable to create account:", error=exc)
-        logging.error("Stack trace: ", error=traceback.format_exc())
+        logger.error("Unable to create account:", error=exc)
+        logger.error("Stack trace: ", error=traceback.format_exc())
         return ServiceError.ACCOUNTS_CANNOT_CREATE
     else:
         await transaction.commit()
@@ -201,8 +201,8 @@ async def delete(ctx: Context, account_id: int) -> Mapping[str, Any] | ServiceEr
 
     except Exception as exc:  # pragma: no cover
         await transaction.rollback()
-        logging.error("Unable to delete account:", error=exc)
-        logging.error("Stack trace: ", error=traceback.format_exc())
+        logger.error("Unable to delete account:", error=exc)
+        logger.error("Stack trace: ", error=traceback.format_exc())
         return ServiceError.ACCOUNTS_CANNOT_DELETE
     else:
         await transaction.commit()
