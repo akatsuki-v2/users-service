@@ -119,6 +119,16 @@ async def partial_update(ctx: Context, session_id: UUID, **kwargs: Any | None
     if presence is None:
         return ServiceError.PRESENCES_NOT_FOUND
 
+    # TODO: should we be waiting here?
+    # should it be in a separate task?
+    await ctx.kafka.send_and_wait(
+        topic="presences.update",
+        value={
+            "session_id": session_id,
+            "presence": presence,
+        },
+    )
+
     return presence
 
 

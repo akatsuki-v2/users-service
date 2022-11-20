@@ -41,3 +41,6 @@ AMQP_HOST = os.environ["AMQP_HOST"]
 AMQP_PORT = int(os.environ["AMQP_PORT"])
 AMQP_USER = os.environ["AMQP_USER"]
 AMQP_PASS = os.environ["AMQP_PASS"]
+
+# kafka
+KAFKA_HOSTS = os.environ["KAFKA_HOSTS"].split(',')

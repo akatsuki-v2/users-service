@@ -5,7 +5,9 @@ import time
 from app.common import settings
 from app.services import database
 from app.services import redis
+from app.services import kafka
 from fastapi import FastAPI
+from app.common import json
 from fastapi import Request
 from shared_modules import logger
 
@@ -67,23 +69,49 @@ def init_redis(api: FastAPI) -> None:
         logger.info("Redis pool shut down")
 
 
+def init_kafka(api: FastAPI) -> None:
+    @api.on_event("startup")
+    async def startup_kafka() -> None:
+        logger.info("Starting up kafka")
+        service_kafka = kafka.ServiceKafka(
+            bootstrap_servers=settings.KAFKA_HOSTS,  # type: ignore
+            value_serializer=json.dumps,
+        )
+        await service_kafka.start()
+        api.state.kafka = service_kafka
+        logger.info("Kafka started up")
+
+    @ api.on_event("shutdown")
+    async def shutdown_kafka() -> None:
+        logger.info("Shutting down kafka")
+        await api.state.kafka.stop()
+        del api.state.kafka
+        logger.info("Kafka shut down")
+
+
 def init_middlewares(api: FastAPI) -> None:
     # NOTE: these run bottom to top
 
-    @api.middleware("http")
+    @ api.middleware("http")
     async def add_db_to_request(request: Request, call_next):
         async with request.app.state.db.connection() as conn:
             request.state.db = conn
             response = await call_next(request)
         return response
 
-    @api.middleware("http")
+    @ api.middleware("http")
     async def add_redis_to_request(request: Request, call_next):
         request.state.redis = request.app.state.redis
         response = await call_next(request)
         return response
 
-    @api.middleware("http")
+    @ api.middleware("http")
+    async def add_kafka_to_request(request: Request, call_next):
+        request.state.kafka = request.app.state.kafka
+        response = await call_next(request)
+        return response
+
+    @ api.middleware("http")
     async def add_process_time_header(request: Request, call_next):
         start_time = time.perf_counter_ns()
         response = await call_next(request)
@@ -103,6 +131,7 @@ def init_api():
 
     init_db(api)
     init_redis(api)
+    init_kafka(api)
     init_middlewares(api)
     init_routes(api)
 
